@@ -1,14 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>MoneyReveal</title>
+
 <link rel="stylesheet" href="style.css">
+
 </head>
-  
-<script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
-  
+
 <body>
 
 <div class="container">
@@ -16,7 +17,7 @@
 <h1>MoneyReveal</h1>
 
 <p class="tagline">
-Reveal where your money really goes.
+Reveal where your money really goes
 </p>
 
 <p class="description">
@@ -24,13 +25,14 @@ Upload a bank statement to detect subscriptions, recurring payments, and spendin
 </p>
 
 <div class="upload-box">
-<input type="file" id="fileInput">
+<input type="file" id="fileInput" accept=".xlsx,.xls,.csv">
 </div>
 
-<div class="results" id="results"></div>
+<div id="results"></div>
 
 </div>
 
+<script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
 <script src="app.js"></script>
 
 </body>
