@@ -1,19 +1,35 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>MoneyReveal</title>
 <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
+<div class="container">
+
 <h1>MoneyReveal</h1>
 
-<p>Reveal where your money really goes.</p>
+<p class="tagline">
+Reveal where your money really goes.
+</p>
 
-<p>Upload your bank statement to find subscriptions and recurring costs.</p>
+<p class="description">
+Upload a bank statement to detect subscriptions, recurring payments, and spending patterns.
+</p>
 
-<input type="file">
+<div class="upload-box">
+<input type="file" id="fileInput">
+</div>
+
+<div class="results" id="results"></div>
+
+</div>
+
+<script src="app.js"></script>
 
 </body>
 </html>
