@@ -167,13 +167,14 @@ function normalizeRows(rows) {
     const balance = row[4] !== "" ? Number(row[4]) : null;
     if (!date && !description) continue;
     if (!/^\d{4}-\d{2}-\d{2}/.test(date)) continue;
-    transactions.push({
+  transactions.push({
       date,
       description,
       amount,
       balance,
       rawAmount: String(row[3] ?? "")
     });
+  }
   return transactions;
 }
 
