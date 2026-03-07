@@ -1,39 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MoneyReveal</title>
-
-<link rel="stylesheet" href="style.css">
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MoneyReveal</title>
+  <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
+  <div class="container">
+    <h1>MoneyReveal</h1>
+    <p class="tagline">Reveal where your money really goes</p>
+    <p class="description">
+      Upload a bank statement to detect subscriptions, recurring payments, and spending patterns.
+    </p>
 
-<div class="container">
+    <div class="upload-box">
+      <input type="file" id="fileInput" accept=".csv,.xlsx,.xls">
+    </div>
 
-<h1>MoneyReveal</h1>
+    <div id="results"></div>
+  </div>
 
-<p class="tagline">
-Reveal where your money really goes
-</p>
-
-<p class="description">
-Upload a bank statement to detect subscriptions, recurring payments, and spending patterns.
-</p>
-
-<div class="upload-box">
-<input type="file" id="fileInput" accept=".xlsx,.xls,.csv">
-</div>
-
-<div id="results"></div>
-
-</div>
-
-<script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
-<script src="app.js"></script>
-
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+  <script src="app.js"></script>
 </body>
 </html>
