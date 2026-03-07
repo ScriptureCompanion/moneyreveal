@@ -33,9 +33,14 @@ function readExcelFile(file) {
       try {
         const arr = new Uint8Array(data);
         const workbook = XLSX.read(arr, { type: "array", cellDates: true });
-        const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-        const rows = XLSX.utils.sheet_to_json(worksheet, { header: 1, defval: "" });
-        handleParsedRows(rows, file.name, "excel");
+        console.log("Sheet names:", workbook.SheetNames);
+        const allRows = [];
+        workbook.SheetNames.forEach(name => {
+          const ws = workbook.Sheets[name];
+          const rows = XLSX.utils.sheet_to_json(ws, { header: 1, defval: "" });
+          allRows.push(...rows);
+        });
+        handleParsedRows(allRows, file.name, "excel");
         return;
       } catch (directErr) {
         console.warn("SheetJS direct failed, trying JSZip repack:", directErr.message);
@@ -44,19 +49,25 @@ function readExcelFile(file) {
       // Repack ZIP with JSZip then re-read with SheetJS
       const zip = await JSZip.loadAsync(data);
       const repackedZip = new JSZip();
-
       for (const [path, zipEntry] of Object.entries(zip.files)) {
         if (!zipEntry.dir) {
           const content = await zipEntry.async("uint8array");
           repackedZip.file(path, content, { compression: "DEFLATE" });
         }
       }
-
       const repackedData = await repackedZip.generateAsync({ type: "uint8array" });
       const workbook = XLSX.read(repackedData, { type: "array", cellDates: true });
-      const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-      const rows = XLSX.utils.sheet_to_json(worksheet, { header: 1, defval: "" });
-      handleParsedRows(rows, file.name, "excel-repacked");
+      console.log("Sheet names:", workbook.SheetNames);
+      const allRows = [];
+      workbook.SheetNames.forEach(name => {
+        const ws = workbook.Sheets[name];
+        const rows = XLSX.utils.sheet_to_json(ws, { header: 1, defval: "" });
+        allRows.push(...rows);
+      });
+      console.log("First 3 rows:", allRows.slice(0, 3));
+      console.log("Row at index 9:", allRows[9]);
+      console.log("Row at index 10:", allRows[10]);
+      handleParsedRows(allRows, file.name, "excel-repacked");
 
     } catch (err) {
       console.error("All Excel read methods failed:", err);
