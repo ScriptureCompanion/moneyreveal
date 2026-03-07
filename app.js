@@ -145,7 +145,6 @@ function handleParsedRows(rows, fileName, fileType) {
 function normalizeRows(rows) {
   const transactions = [];
 
-  // Find the header row by looking for "Datum" or "datum"
   let startIndex = 0;
   for (let i = 0; i < rows.length; i++) {
     const row = rows[i];
@@ -156,29 +155,25 @@ function normalizeRows(rows) {
     }
   }
 
-  console.log("console.log("Transactions start at row index:", startIndex);
-  console.log("Total rows in file:", rows.length);Transactions start at row index:", startIndex);
+  console.log("Transactions start at row index:", startIndex);
+  console.log("Total rows in file:", rows.length);
 
   for (let i = startIndex; i < rows.length; i++) {
     const row = rows[i];
     if (!row || row.length < 3) continue;
-  const date = String(row[1] ?? "").trim();
+    const date = String(row[1] ?? "").trim();
     const description = String(row[2] ?? "").trim();
     const amount = row[3] !== "" ? Number(row[3]) : null;
     const balance = row[4] !== "" ? Number(row[4]) : null;
     if (!date && !description) continue;
     if (!/^\d{4}-\d{2}-\d{2}/.test(date)) continue;
-  transactions.push({
-      date,
-      description,
-      amount,
-      balance,
-      rawAmount: String(row[3] ?? "")
-    });
+    transactions.push({ date, description, amount, balance, rawAmount: String(row[3] ?? "") });
   }
-if (transactions.length > 0) {
+
+  if (transactions.length > 0) {
     console.log("Date range:", transactions[transactions.length - 1].date, "->", transactions[0].date);
   }
+
   return transactions;
 }
 
