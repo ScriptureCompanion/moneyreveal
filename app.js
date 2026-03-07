@@ -25,36 +25,43 @@ function handleFileUpload(event) {
 
 function readExcelFile(file) {
   const reader = new FileReader();
-  reader.onload = function (e) {
+  reader.onload = async function (e) {
     try {
-      const data = new Uint8Array(e.target.result);
-      console.log("File size:", data.length);
-      console.log("First bytes:", data[0], data[1], data[2], data[3]);
-      const workbook = XLSX.read(data, { type: "array", cellDates: true, dense: true, WTF: true });
-      const firstSheetName = workbook.SheetNames[0];
-      const worksheet = workbook.Sheets[firstSheetName];
-      const rows = XLSX.utils.sheet_to_json(worksheet, { header: 1, defval: "" });
-      handleParsedRows(rows, file.name, "excel");
-    } catch (error) {
-      console.warn("SheetJS binary read failed, trying HTML fallback:", error.message);
-      const fallbackReader = new FileReader();
-      fallbackReader.onload = function (e2) {
-       try {
-          const html = e2.target.result;
-          console.log("Raw file preview:", html.substring(0, 500));
-          const parser = new DOMParser();
-          const doc = parser.parseFromString(html, "text/html");
-          const rows = Array.from(doc.querySelectorAll("tr")).map(tr =>
-            Array.from(tr.querySelectorAll("td,th")).map(td => td.innerText.trim())
-          );
-          if (rows.length === 0) throw new Error("No table rows found in HTML fallback");
-          handleParsedRows(rows, file.name, "xls-html");
-        } catch (err2) {
-          console.error("HTML fallback also failed:", err2);
-          results.textContent = "Could not read file: " + err2.message;
+      const data = e.target.result;
+
+      // Try SheetJS directly first
+      try {
+        const arr = new Uint8Array(data);
+        const workbook = XLSX.read(arr, { type: "array", cellDates: true });
+        const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+        const rows = XLSX.utils.sheet_to_json(worksheet, { header: 1, defval: "" });
+        handleParsedRows(rows, file.name, "excel");
+        return;
+      } catch (directErr) {
+        console.warn("SheetJS direct failed, trying JSZip repack:", directErr.message);
+      }
+
+      // Repack ZIP with JSZip then re-read with SheetJS
+      const zip = await JSZip.loadAsync(data);
+      const repackedZip = new JSZip();
+
+      for (const [path, zipEntry] of Object.entries(zip.files)) {
+        if (!zipEntry.dir) {
+          const content = await zipEntry.async("uint8array");
+          repackedZip.file(path, content, { compression: "DEFLATE" });
         }
-      };
-    fallbackReader.readAsText(file, "ISO-8859-1");    }
+      }
+
+      const repackedData = await repackedZip.generateAsync({ type: "uint8array" });
+      const workbook = XLSX.read(repackedData, { type: "array", cellDates: true });
+      const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+      const rows = XLSX.utils.sheet_to_json(worksheet, { header: 1, defval: "" });
+      handleParsedRows(rows, file.name, "excel-repacked");
+
+    } catch (err) {
+      console.error("All Excel read methods failed:", err);
+      results.textContent = "Could not read Excel file: " + err.message;
+    }
   };
   reader.readAsArrayBuffer(file);
 }
