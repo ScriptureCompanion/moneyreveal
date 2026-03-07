@@ -28,7 +28,9 @@ function readExcelFile(file) {
   reader.onload = function (e) {
     try {
       const data = new Uint8Array(e.target.result);
-     const workbook = XLSX.read(data, { type: "array", cellDates: true, dense: true });
+      console.log("File size:", data.length);
+      console.log("First bytes:", data[0], data[1], data[2], data[3]);
+      const workbook = XLSX.read(data, { type: "array", cellDates: true, dense: true, WTF: true });
       const firstSheetName = workbook.SheetNames[0];
       const worksheet = workbook.Sheets[firstSheetName];
       const rows = XLSX.utils.sheet_to_json(worksheet, { header: 1, defval: "" });
