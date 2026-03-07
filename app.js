@@ -156,7 +156,8 @@ function normalizeRows(rows) {
     }
   }
 
-  console.log("Transactions start at row index:", startIndex);
+  console.log("console.log("Transactions start at row index:", startIndex);
+  console.log("Total rows in file:", rows.length);Transactions start at row index:", startIndex);
 
   for (let i = startIndex; i < rows.length; i++) {
     const row = rows[i];
