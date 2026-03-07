@@ -161,20 +161,19 @@ function normalizeRows(rows) {
   for (let i = startIndex; i < rows.length; i++) {
     const row = rows[i];
     if (!row || row.length < 3) continue;
-    const date = String(row[0] ?? "").trim();
-    const description = String(row[1] ?? "").trim();
-    const rawAmount = String(row[2] ?? "").trim();
-    if (!date && !description && !rawAmount) continue;
-    // Skip rows that don't look like a date
+  const date = String(row[1] ?? "").trim();
+    const description = String(row[2] ?? "").trim();
+    const amount = row[3] !== "" ? Number(row[3]) : null;
+    const balance = row[4] !== "" ? Number(row[4]) : null;
+    if (!date && !description) continue;
     if (!/^\d{4}-\d{2}-\d{2}/.test(date)) continue;
-    const amount = parseAmount(rawAmount);
     transactions.push({
       date,
       description,
       amount,
-      rawAmount
+      balance,
+      rawAmount: String(row[3] ?? "")
     });
-  }
   return transactions;
 }
 
