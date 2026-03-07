@@ -37,9 +37,11 @@ function readExcelFile(file) {
       const rows = XLSX.utils.sheet_to_json(worksheet, { header: 1, defval: "" });
 
       handleParsedRows(rows, file.name, "excel");
-    } catch (error) {
-      console.error(error);
-      results.textContent = "Could not read Excel file.";
+   } catch (error) {
+      console.error("SheetJS error:", error);
+      console.log("XLSX available:", typeof XLSX !== "undefined");
+      console.log("Data length:", data?.length);
+      results.textContent = "Could not read Excel file: " + error.message;
     }
   };
 
