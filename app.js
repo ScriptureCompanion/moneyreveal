@@ -51,8 +51,7 @@ function readExcelFile(file) {
           results.textContent = "Could not read file: " + err2.message;
         }
       };
-      fallbackReader.readAsText(file);
-    }
+    fallbackReader.readAsText(file, "ISO-8859-1");    }
   };
   reader.readAsArrayBuffer(file);
 }
