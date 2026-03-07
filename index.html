@@ -21,50 +21,7 @@
   <div id="results"></div>
 
 <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
-<script>
-  document.getElementById('fileInput').addEventListener('change', function(e) {
-    const file = e.target.files[0];
-    if (!file) return;
+  
 
-    const ext = file.name.split('.').pop().toLowerCase();
-    const reader = new FileReader();
-
-    if (ext === 'csv') {
-      reader.onload = function(ev) {
-        const workbook = XLSX.read(ev.target.result, { type: 'string' });
-        const sheet = workbook.Sheets[workbook.SheetNames[0]];
-        window.parsedRows = XLSX.utils.sheet_to_json(sheet, { defval: '' });
-        console.log('Parsed CSV rows:', window.parsedRows);
-      };
-      reader.readAsText(file);
-
-    } else if (ext === 'xlsx' || ext === 'xls') {
-      reader.onload = function(ev) {
-        try {
-          const data = new Uint8Array(ev.target.result);
-          const workbook = XLSX.read(data, { type: 'array' });
-          const sheet = workbook.Sheets[workbook.SheetNames[0]];
-          window.parsedRows = XLSX.utils.sheet_to_json(sheet, { defval: '' });
-          console.log('Parsed XLS/XLSX rows:', window.parsedRows);
-        } catch (err) {
-          console.warn('SheetJS failed, falling back to HTML read:', err);
-          const fallbackReader = new FileReader();
-          fallbackReader.onload = function(ev2) {
-            const html = ev2.target.result;
-            const parser = new DOMParser();
-            const doc = parser.parseFromString(html, 'text/html');
-            const rows = Array.from(doc.querySelectorAll('tr')).map(tr =>
-              Array.from(tr.querySelectorAll('td,th')).map(td => td.innerText.trim())
-            );
-            window.parsedRows = rows;
-            console.log('Fallback HTML rows:', window.parsedRows);
-          };
-          fallbackReader.readAsText(file);
-        }
-      };
-      reader.readAsArrayBuffer(file);
-    }
-  });
-</script>
 <script src="app.js"></script>
 </body>
