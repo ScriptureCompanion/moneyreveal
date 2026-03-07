@@ -109,13 +109,26 @@ function handleParsedRows(rows, fileName, fileType) {
 
   console.log("Normalized rows:", normalizedRows);
 
-  results.textContent =
-    `File loaded successfully: ${fileName}\n` +
-    `Type: ${fileType}\n` +
-    `Rows found: ${rows.length}\n` +
-    `Normalized transactions found: ${normalizedRows.length}\n\n` +
-    `Preview of first rows:\n` +
-    previewRows.map(row => JSON.stringify(row)).join("\n");
+ let html = `<p><strong>File:</strong> ${fileName} &nbsp; <strong>Transactions:</strong> ${normalizedRows.length}</p>`;
+
+  if (normalizedRows.length > 0) {
+    html += `<table border="1" cellpadding="6" cellspacing="0" style="border-collapse:collapse;width:100%;font-size:14px;">
+      <thead><tr><th>Datum</th><th>Beskrivning</th><th>Belopp</th></tr></thead>
+      <tbody>`;
+    normalizedRows.forEach(row => {
+      const color = row.amount < 0 ? "red" : "green";
+      html += `<tr>
+        <td>${row.date}</td>
+        <td>${row.description}</td>
+        <td style="color:${color};text-align:right;">${row.amount}</td>
+      </tr>`;
+    });
+    html += `</tbody></table>`;
+  } else {
+    html += `<p>No transactions parsed. Raw preview:</p><pre>${previewRows.map(r => JSON.stringify(r)).join("\n")}</pre>`;
+  }
+
+  results.innerHTML = html;
 }
 
 function normalizeRows(rows) {
