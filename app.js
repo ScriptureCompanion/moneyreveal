@@ -176,6 +176,9 @@ function normalizeRows(rows) {
       rawAmount: String(row[3] ?? "")
     });
   }
+if (transactions.length > 0) {
+    console.log("Date range:", transactions[transactions.length - 1].date, "->", transactions[0].date);
+  }
   return transactions;
 }
 
