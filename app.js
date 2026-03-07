@@ -37,8 +37,9 @@ function readExcelFile(file) {
       console.warn("SheetJS binary read failed, trying HTML fallback:", error.message);
       const fallbackReader = new FileReader();
       fallbackReader.onload = function (e2) {
-        try {
+       try {
           const html = e2.target.result;
+          console.log("Raw file preview:", html.substring(0, 500));
           const parser = new DOMParser();
           const doc = parser.parseFromString(html, "text/html");
           const rows = Array.from(doc.querySelectorAll("tr")).map(tr =>
