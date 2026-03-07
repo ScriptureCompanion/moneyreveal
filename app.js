@@ -112,18 +112,29 @@ function handleParsedRows(rows, fileName, fileType) {
 function normalizeRows(rows) {
   const transactions = [];
 
-  for (let i = 1; i < rows.length; i++) {
+  // Find the header row by looking for "Datum" or "datum"
+  let startIndex = 0;
+  for (let i = 0; i < rows.length; i++) {
+    const row = rows[i];
+    const rowText = row.join(" ").toLowerCase();
+    if (rowText.includes("datum") && rowText.includes("belopp")) {
+      startIndex = i + 1;
+      break;
+    }
+  }
+
+  console.log("Transactions start at row index:", startIndex);
+
+  for (let i = startIndex; i < rows.length; i++) {
     const row = rows[i];
     if (!row || row.length < 3) continue;
-
     const date = String(row[0] ?? "").trim();
     const description = String(row[1] ?? "").trim();
     const rawAmount = String(row[2] ?? "").trim();
-
     if (!date && !description && !rawAmount) continue;
-
+    // Skip rows that don't look like a date
+    if (!/^\d{4}-\d{2}-\d{2}/.test(date)) continue;
     const amount = parseAmount(rawAmount);
-
     transactions.push({
       date,
       description,
@@ -131,7 +142,6 @@ function normalizeRows(rows) {
       rawAmount
     });
   }
-
   return transactions;
 }
 
