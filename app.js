@@ -1,30 +1,142 @@
-document.getElementById("fileInput").addEventListener("change", function (e) {
+const fileInput = document.getElementById("fileInput");
+const results = document.getElementById("results");
 
-const file = e.target.files[0];
-if (!file) return;
+fileInput.addEventListener("change", handleFileUpload);
 
-const reader = new FileReader();
+function handleFileUpload(event) {
+  const file = event.target.files[0];
+  if (!file) return;
 
-reader.onload = function(event) {
+  const fileName = file.name.toLowerCase();
+  results.textContent = `Reading file: ${file.name} ...`;
 
-const data = new Uint8Array(event.target.result);
+  if (fileName.endsWith(".xlsx") || fileName.endsWith(".xls")) {
+    readExcelFile(file);
+    return;
+  }
 
-const workbook = XLSX.read(data, { type: "array" });
+  if (fileName.endsWith(".csv")) {
+    readCsvFile(file);
+    return;
+  }
 
-const firstSheetName = workbook.SheetNames[0];
+  results.textContent = "Unsupported file type. Please upload .csv, .xlsx, or .xls";
+}
 
-const worksheet = workbook.Sheets[firstSheetName];
+function readExcelFile(file) {
+  const reader = new FileReader();
 
-const rows = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+  reader.onload = function (e) {
+    try {
+      const data = new Uint8Array(e.target.result);
+      const workbook = XLSX.read(data, { type: "array" });
 
-document.getElementById("results").innerText =
-"Rows found: " + rows.length;
+      const firstSheetName = workbook.SheetNames[0];
+      const worksheet = workbook.Sheets[firstSheetName];
 
-console.log("All rows from file:");
-console.log(rows);
+      const rows = XLSX.utils.sheet_to_json(worksheet, { header: 1, defval: "" });
 
-};
+      handleParsedRows(rows, file.name, "excel");
+    } catch (error) {
+      console.error(error);
+      results.textContent = "Could not read Excel file.";
+    }
+  };
 
-reader.readAsArrayBuffer(file);
+  reader.readAsArrayBuffer(file);
+}
 
-});
+function readCsvFile(file) {
+  const reader = new FileReader();
+
+  reader.onload = function (e) {
+    try {
+      const text = e.target.result;
+      const rows = parseCsv(text);
+      handleParsedRows(rows, file.name, "csv");
+    } catch (error) {
+      console.error(error);
+      results.textContent = "Could not read CSV file.";
+    }
+  };
+
+  reader.readAsText(file);
+}
+
+function parseCsv(text) {
+  const lines = text
+    .split(/\r?\n/)
+    .filter(line => line.trim() !== "");
+
+  return lines.map(line => {
+    if (line.includes(";")) {
+      return line.split(";").map(cell => cell.trim());
+    }
+    return line.split(",").map(cell => cell.trim());
+  });
+}
+
+function handleParsedRows(rows, fileName, fileType) {
+  console.log("Raw rows:", rows);
+
+  if (!rows || rows.length === 0) {
+    results.textContent = "No rows found in file.";
+    return;
+  }
+
+  const previewRows = rows.slice(0, 8);
+  const normalizedRows = normalizeRows(rows);
+
+  console.log("Normalized rows:", normalizedRows);
+
+  results.textContent =
+    `File loaded successfully: ${fileName}\n` +
+    `Type: ${fileType}\n` +
+    `Rows found: ${rows.length}\n` +
+    `Normalized transactions found: ${normalizedRows.length}\n\n` +
+    `Preview of first rows:\n` +
+    previewRows.map(row => JSON.stringify(row)).join("\n");
+}
+
+function normalizeRows(rows) {
+  const transactions = [];
+
+  for (let i = 1; i < rows.length; i++) {
+    const row = rows[i];
+    if (!row || row.length < 3) continue;
+
+    const date = String(row[0] ?? "").trim();
+    const description = String(row[1] ?? "").trim();
+    const rawAmount = String(row[2] ?? "").trim();
+
+    if (!date && !description && !rawAmount) continue;
+
+    const amount = parseAmount(rawAmount);
+
+    transactions.push({
+      date,
+      description,
+      amount,
+      rawAmount
+    });
+  }
+
+  return transactions;
+}
+
+function parseAmount(value) {
+  if (!value) return null;
+
+  let cleaned = String(value).trim();
+
+  cleaned = cleaned.replace(/\s/g, "");
+
+  if (cleaned.includes(",") && cleaned.includes(".")) {
+    cleaned = cleaned.replace(/\./g, "").replace(",", ".");
+  } else if (cleaned.includes(",")) {
+    cleaned = cleaned.replace(",", ".");
+  }
+
+  const num = Number(cleaned);
+  return Number.isNaN(num) ? null : num;
+}
