@@ -170,6 +170,7 @@ function handleParsedRows(rows, fileName, fileType) {
   .slice(0, 5);
 
 const subscriptions = detectSubscriptions(normalizedRows);
+    const monthlyEstimate = estimateMonthlySpending(normalizedRows);
 
    console.log(subscriptions);
    
@@ -197,9 +198,18 @@ const subscriptions = detectSubscriptions(normalizedRows);
         <div style="font-size:11px;text-transform:uppercase;color:#888;margin-bottom:4px;">Total Income</div>
         <div style="font-size:22px;font-weight:700;color:#27ae60;">+${fmt(totalIn)}</div>
       </div>
-      <div style="flex:1;min-width:160px;padding:14px 18px;background:#f5f5ff;border-left:4px solid #7b5ea7;border-radius:6px;">
+     <div style="flex:1;min-width:160px;padding:14px 18px;background:#f5f5ff;border-left:4px solid #7b5ea7;border-radius:6px;">
         <div style="font-size:11px;text-transform:uppercase;color:#888;margin-bottom:4px;">Net</div>
         <div style="font-size:22px;font-weight:700;color:${net >= 0 ? "#27ae60" : "#c0392b"};">${net >= 0 ? "+" : ""}${fmt(net)}</div>
+      </div>
+    </div>`;
+    html += `
+    <div style="flex:1;min-width:160px;padding:14px 18px;background:#fffbe6;border-left:4px solid #e0a800;border-radius:6px;">
+      <div style="font-size:11px;text-transform:uppercase;color:#888;margin-bottom:4px;">
+        Estimated Monthly Spending
+      </div>
+      <div style="font-size:22px;font-weight:700;color:#e07000;">
+        ${fmt(monthlyEstimate)}
       </div>
     </div>`;
 
