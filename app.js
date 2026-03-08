@@ -299,32 +299,63 @@ function readCsvFile(file) {
 }
 
 function parseCsv(text) {
-  const lines = text.split(/\r?\n/).filter(line => line.trim() !== "");
-  if (lines.length === 0) return [];
-
-  // Detect delimiter from first line
-  const firstLine = lines[0];
+  // Detect delimiter from first non-empty line
+  const firstLine = text.trimStart().split(/\r?\n/)[0];
   const delimiter = (firstLine.split(";").length >= firstLine.split(",").length) ? ";" : ",";
 
-  return lines.map(line => {
-    const cells = [];
-    let cur = "";
-    let inQuote = false;
-    for (let i = 0; i < line.length; i++) {
-      const ch = line[i];
-      if (inQuote) {
-        if (ch === '"' && line[i + 1] === '"') { cur += '"'; i++; }
-        else if (ch === '"') { inQuote = false; }
-        else { cur += ch; }
+  const rows = [];
+  let row = [];
+  let cur = "";
+  let inQuote = false;
+  let i = 0;
+
+  while (i < text.length) {
+    const ch = text[i];
+
+    if (inQuote) {
+      if (ch === '"' && text[i + 1] === '"') {
+        // Escaped quote
+        cur += '"';
+        i += 2;
+      } else if (ch === '"') {
+        inQuote = false;
+        i++;
       } else {
-        if (ch === '"') { inQuote = true; }
-        else if (ch === delimiter) { cells.push(cur.trim()); cur = ""; }
-        else { cur += ch; }
+        cur += ch;
+        i++;
+      }
+    } else {
+      if (ch === '"') {
+        inQuote = true;
+        i++;
+      } else if (ch === delimiter) {
+        row.push(cur.trim());
+        cur = "";
+        i++;
+      } else if (ch === "\r" && text[i + 1] === "\n") {
+        row.push(cur.trim());
+        cur = "";
+        if (row.some(c => c !== "")) rows.push(row);
+        row = [];
+        i += 2;
+      } else if (ch === "\n") {
+        row.push(cur.trim());
+        cur = "";
+        if (row.some(c => c !== "")) rows.push(row);
+        row = [];
+        i++;
+      } else {
+        cur += ch;
+        i++;
       }
     }
-    cells.push(cur.trim());
-    return cells;
-  });
+  }
+
+  // Flush last field/row
+  row.push(cur.trim());
+  if (row.some(c => c !== "")) rows.push(row);
+
+  return rows;
 }
 
 function handleParsedRows(rows, fileName, fileType) {
