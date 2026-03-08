@@ -2,6 +2,34 @@ const fileInput = document.getElementById("fileInput");
 const results = document.getElementById("results");
 const MERCHANT_CATEGORIES = {
 
+  const CATEGORY_KEYWORDS = {
+
+  "Food & Dining": [
+    "ica","coop","lidl","willy","hemköp","pressbyrån",
+    "restaurant","pizza","burger","cafe","coffee","sushi","bar"
+  ],
+
+  "Transport": [
+    "uber","bolt","taxi","sl ","buss","tåg","train",
+    "shell","circle","okq8","fuel","bensin","parkering"
+  ],
+
+  "Subscriptions": [
+    "spotify","netflix","youtube","apple","google",
+    "microsoft","hbo","adobe","icloud","prime"
+  ],
+
+  "Shopping": [
+    "amazon","zalando","ikea","hm","h&m","zara",
+    "elgiganten","media markt","komplett"
+  ],
+
+  "Health": [
+    "apotek","pharmacy","doctor","clinic","gym","fitness"
+  ]
+
+};
+
   "ica": "Food & Dining",
   "coop": "Food & Dining",
   "lidl": "Food & Dining",
