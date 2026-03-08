@@ -757,55 +757,49 @@ function parseAmount(value) {
   return trailingMinus ? -Math.abs(signed) : signed;
 }
 
+function stripBankNoise(text) {
+  // ... (the new function)
+}
+
 function normalizeMerchant(description) {
 
   let text = description.toLowerCase();
 
-  // remove numbers
-  text = text.replace(/[0-9]/g,"");
-
-  // remove special characters
-  text = text.replace(/[^a-zåäö\s]/g,"");
+  // remove special characters (keep letters, digits, spaces, swedish chars, * for PAYPAL*SHOPIFY)
+  text = text.replace(/[^a-zåäö0-9\s*]/g, " ");
 
   // collapse spaces
-  text = text.replace(/\s+/g," ").trim();
+  text = text.replace(/\s+/g, " ").trim();
 
-  // check alias dictionary first
+  // check alias dictionary first (before stripping numbers, so "circle k" etc. still match)
   for (const merchant in MERCHANT_ALIASES) {
     for (const alias of MERCHANT_ALIASES[merchant]) {
-
       if (text.includes(alias)) {
         return merchant;
       }
-
     }
   }
 
-  // merchant clustering fallback
-  const words = text.split(" ");
+  // strip noise, then try alias match again on cleaned text
+  const cleaned = stripBankNoise(text);
 
+  for (const merchant in MERCHANT_ALIASES) {
+    for (const alias of MERCHANT_ALIASES[merchant]) {
+      if (cleaned.includes(alias)) {
+        return merchant;
+      }
+    }
+  }
+
+  // merchant clustering fallback on cleaned text
   const clusterWords = [
-    "ica",
-    "coop",
-    "willys",
-    "lidl",
-    "hemköp",
-    "systembolaget",
-    "shell",
-    "circle",
-    "okq8",
-    "preem",
-    "uber",
-    "bolt",
-    "spotify",
-    "netflix",
-    "apple",
-    "google",
-    "amazon",
-    "klarna",
-    "paypal",
-    "swish"
+    "ica", "coop", "willys", "lidl", "hemköp", "systembolaget",
+    "shell", "circle", "okq8", "preem", "uber", "bolt",
+    "spotify", "netflix", "apple", "google", "amazon",
+    "klarna", "paypal", "swish"
   ];
+
+  const words = cleaned.split(" ").filter(Boolean);
 
   for (const word of words) {
     if (clusterWords.includes(word)) {
@@ -813,8 +807,9 @@ function normalizeMerchant(description) {
     }
   }
 
-  // fallback to first word
-  return words[0];
+  // best 1–3 word phrase from remaining cleaned text
+  const phrase = words.slice(0, 3).join(" ");
+  return phrase || "unknown";
 }
 
 function detectCategory(description) {
