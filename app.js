@@ -35,11 +35,7 @@ fileInput.addEventListener("change", handleFileUpload);
 function handleFileUpload(event) {
   const files = event.target.files;
   if (!files || files.length === 0) return;
-
-  allTransactions = [];
-  filesProcessed = 0;
-  totalFiles = files.length;
-
+ 
   results.textContent = `Reading ${files.length} file(s)...`;
 
   for (const file of files) {
