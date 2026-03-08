@@ -303,6 +303,23 @@ const { subscriptions, recurringMerchants } = detectSubscriptions(allTransaction
   html += `</ul></div>`;
 }
 
+// Top Merchants
+    const merchantTotals = {};
+    expenses.forEach(t => {
+      merchantTotals[t.merchant] = (merchantTotals[t.merchant]||0) + Math.abs(t.amount);
+    });
+    const topMerchants = Object.entries(merchantTotals).sort((a,b)=>b[1]-a[1]).slice(0,5);
+    if(topMerchants.length > 0){
+      html += `<div style="margin:16px 0;"><strong>Top Merchants</strong><div style="margin-top:8px;">`;
+      topMerchants.forEach(([merchant, total]) => {
+        html += `<div style="margin-bottom:4px;font-size:13px;">
+          <span style="display:inline-block;width:180px;text-transform:capitalize;">${merchant}</span>
+          <span style="color:#c0392b;">${fmt(total)} kr</span>
+        </div>`;
+      });
+      html += `</div></div>`;
+    }
+    
     html += `<table border="1" cellpadding="6" cellspacing="0" style="border-collapse:collapse;width:100%;font-size:13px;margin-top:16px;">
       <thead><tr style="background:#f5f5f5;"><th>Date</th><th>Description</th><th>Amount</th></tr></thead>
       <tbody>`;
