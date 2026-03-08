@@ -181,16 +181,10 @@ function handleParsedRows(rows, fileName, fileType) {
       "Health":           ["apotek", "gym", "fitness", "doctor", "pharmacy", "health"],
     };
     const catTotals = {};
-    expenses.forEach(r => {
-      const desc = r.description.toLowerCase();
-      for (const [cat, keywords] of Object.entries(CATEGORIES)) {
-        if (keywords.some(k => desc.includes(k))) {
-          catTotals[cat] = (catTotals[cat] || 0) + Math.abs(r.amount);
-          return;
-        }
-      }
-      catTotals["Other"] = (catTotals["Other"] || 0) + Math.abs(r.amount);
-    });
+   expenses.forEach(r => {
+  const cat = r.category || "Other";
+  catTotals[cat] = (catTotals[cat] || 0) + Math.abs(r.amount);
+});
     const topCats = Object.entries(catTotals).sort((a, b) => b[1] - a[1]).slice(0, 5);
 
     const fmt = n => (n == null || isNaN(n)) ? "—" : n.toLocaleString("sv-SE", { minimumFractionDigits: 2 });
