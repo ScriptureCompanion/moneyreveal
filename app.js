@@ -522,6 +522,64 @@ function normalizeMerchant(description) {
   // collapse spaces
   text = text.replace(/\s+/g," ").trim();
 
+  // check alias dictionary first
+  for (const merchant in MERCHANT_ALIASES) {
+    for (const alias of MERCHANT_ALIASES[merchant]) {
+
+      if (text.includes(alias)) {
+        return merchant;
+      }
+
+    }
+  }
+
+  // merchant clustering fallback
+  const words = text.split(" ");
+
+  const clusterWords = [
+    "ica",
+    "coop",
+    "willys",
+    "lidl",
+    "hemköp",
+    "systembolaget",
+    "shell",
+    "circle",
+    "okq8",
+    "preem",
+    "uber",
+    "bolt",
+    "spotify",
+    "netflix",
+    "apple",
+    "google",
+    "amazon",
+    "klarna",
+    "paypal",
+    "swish"
+  ];
+
+  for (const word of words) {
+    if (clusterWords.includes(word)) {
+      return word;
+    }
+  }
+
+  // fallback to first word
+  return words[0];
+}
+
+  let text = description.toLowerCase();
+
+  // remove numbers
+  text = text.replace(/[0-9]/g,"");
+
+  // remove special characters
+  text = text.replace(/[^a-zåäö\s]/g,"");
+
+  // collapse spaces
+  text = text.replace(/\s+/g," ").trim();
+
   for (const merchant in MERCHANT_ALIASES) {
     for (const alias of MERCHANT_ALIASES[merchant]) {
 
