@@ -35,23 +35,27 @@ let totalFiles = 0;
 fileInput.addEventListener("change", handleFileUpload);
 
 function handleFileUpload(event) {
-  const file = event.target.files[0];
-  if (!file) return;
+  const files = event.target.files;
+  if (!files || files.length === 0) return;
 
-  const fileName = file.name.toLowerCase();
-  results.textContent = `Reading file: ${file.name} ...`;
+  allTransactions = [];
+  filesProcessed = 0;
+  totalFiles = files.length;
 
-  if (fileName.endsWith(".xlsx") || fileName.endsWith(".xls")) {
-    readExcelFile(file);
-    return;
+  results.textContent = `Reading ${files.length} file(s)...`;
+
+  for (const file of files) {
+    const fileName = file.name.toLowerCase();
+
+    if (fileName.endsWith(".xlsx") || fileName.endsWith(".xls")) {
+      readExcelFile(file);
+    } else if (fileName.endsWith(".csv")) {
+      readCsvFile(file);
+    } else {
+      totalFiles--;
+      if (totalFiles === 0) results.textContent = "No supported files found.";
+    }
   }
-
-  if (fileName.endsWith(".csv")) {
-    readCsvFile(file);
-    return;
-  }
-
-  results.textContent = "Unsupported file type. Please upload .csv, .xlsx, or .xls";
 }
 
 function readExcelFile(file) {
