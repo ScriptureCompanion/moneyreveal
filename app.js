@@ -223,6 +223,23 @@ function handleParsedRows(rows, fileName, fileType) {
       html += `</ul></div>`;
     }
 
+   if(subscriptions.length > 0){
+
+  html += `<div style="margin:16px 0;">
+  <strong>Detected Subscriptions</strong>
+  <ul style="margin-top:6px;">`;
+
+  subscriptions.slice(0,5).forEach(s => {
+
+    html += `<li style="font-size:13px;">
+    ${s.merchant} – ~${s.avgAmount} per payment (${s.count}x)
+    </li>`;
+
+  });
+
+  html += `</ul></div>`;
+}
+
     html += `<table border="1" cellpadding="6" cellspacing="0" style="border-collapse:collapse;width:100%;font-size:13px;margin-top:16px;">
       <thead><tr style="background:#f5f5f5;"><th>Date</th><th>Description</th><th>Amount</th></tr></thead>
       <tbody>`;
