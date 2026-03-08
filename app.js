@@ -142,15 +142,43 @@ function handleParsedRows(rows, fileName, fileType) {
   results.innerHTML = html;
 }
 
+// --- Column alias map: maps bank-specific header names to normalized keys ---
+const COLUMN_ALIASES = {
+  date:        ["datum", "date", "transaktionsdatum", "bookingdate", "booking date", "valuedate", "transaction date", "fecha"],
+  description: ["beskrivning", "text", "description", "merchant", "payee", "name", "mottagare", "transaktion", "details", "memo", "reference"],
+  amount:      ["belopp", "amount", "amount (sek)", "sum", "debit/credit", "transaktionsbelopp", "value", "importe"],
+  balance:     ["saldo", "balance", "running balance", "saldo efter transaktion"]
+};
+
+function detectColumns(headerRow) {
+  const cols = { date: -1, description: -1, amount: -1, balance: -1 };
+  headerRow.forEach((cell, i) => {
+    const normalized = String(cell).toLowerCase().trim();
+    for (const [key, aliases] of Object.entries(COLUMN_ALIASES)) {
+      if (cols[key] === -1 && aliases.includes(normalized)) {
+        cols[key] = i;
+      }
+    }
+  });
+  return cols;
+}
+
 function normalizeRows(rows) {
   const transactions = [];
 
   let startIndex = 0;
+  let cols = { date: 1, description: 2, amount: 3, balance: 4 }; // fallback
+
   for (let i = 0; i < rows.length; i++) {
     const row = rows[i];
     const rowText = row.join(" ").toLowerCase();
-    if (rowText.includes("datum") && rowText.includes("belopp")) {
+    // Detect any row that contains date-like and amount-like headers
+    const hasDateCol  = COLUMN_ALIASES.date.some(a => rowText.includes(a));
+    const hasAmountCol = COLUMN_ALIASES.amount.some(a => rowText.includes(a));
+    if (hasDateCol && hasAmountCol) {
+      cols = detectColumns(row);
       startIndex = i + 1;
+      console.log("Detected columns:", cols, "at row", i);
       break;
     }
   }
@@ -160,14 +188,15 @@ function normalizeRows(rows) {
 
   for (let i = startIndex; i < rows.length; i++) {
     const row = rows[i];
-    if (!row || row.length < 3) continue;
-    const date = String(row[1] ?? "").trim();
-    const description = String(row[2] ?? "").trim();
-    const amount = row[3] !== "" ? Number(row[3]) : null;
-    const balance = row[4] !== "" ? Number(row[4]) : null;
+    if (!row || row.length < 2) continue;
+    const date        = String(row[cols.date]        ?? "").trim();
+    const description = String(row[cols.description] ?? "").trim();
+    const rawAmt      = String(row[cols.amount]      ?? "").trim();
+    const amount      = parseAmount(rawAmt);
+    const balance     = cols.balance !== -1 ? parseAmount(String(row[cols.balance] ?? "")) : null;
     if (!date && !description) continue;
     if (!/^\d{4}-\d{2}-\d{2}/.test(date)) continue;
-    transactions.push({ date, description, amount, balance, rawAmount: String(row[3] ?? "") });
+    transactions.push({ date, description, amount, balance, rawAmount: rawAmt });
   }
 
   if (transactions.length > 0) {
