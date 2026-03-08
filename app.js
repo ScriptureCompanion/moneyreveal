@@ -211,20 +211,22 @@ document.getElementById("resetData").onclick = () => {
 function handleFileUpload(event) {
   const files = event.target.files;
   if (!files || files.length === 0) return;
- 
-   results.textContent = `Reading ${files.length} file(s)...`;
 
+  results.textContent = `Reading ${files.length} file(s)...`;
+
+  let supportedFiles = 0;
   for (const file of files) {
     const fileName = file.name.toLowerCase();
 
     if (fileName.endsWith(".xlsx") || fileName.endsWith(".xls")) {
+      supportedFiles++;
       readExcelFile(file);
     } else if (fileName.endsWith(".csv")) {
+      supportedFiles++;
       readCsvFile(file);
-    } else {
-            if (totalFiles === 0) results.textContent = "No supported files found.";
     }
   }
+  if (supportedFiles === 0) results.textContent = "No supported files found.";
 }
 
 function readExcelFile(file) {
