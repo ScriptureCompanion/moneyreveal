@@ -170,6 +170,9 @@ function handleParsedRows(rows, fileName, fileType) {
   .slice(0, 5);
 
 const subscriptions = detectSubscriptions(normalizedRows);
+
+   console.log(subscriptions);
+   
       .filter(([, n]) => n >= 2)
       .sort((a, b) => b[1] - a[1])
       .slice(0, 5);
