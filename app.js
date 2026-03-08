@@ -122,16 +122,97 @@ function handleParsedRows(rows, fileName, fileType) {
 
  let html = `<p><strong>File:</strong> ${fileName} &nbsp; <strong>Transactions:</strong> ${normalizedRows.length}</p>`;
 
-  if (normalizedRows.length > 0) {
-    html += `<table border="1" cellpadding="6" cellspacing="0" style="border-collapse:collapse;width:100%;font-size:14px;">
-      <thead><tr><th>Datum</th><th>Beskrivning</th><th>Belopp</th></tr></thead>
+ if (normalizedRows.length > 0) {
+    // --- Financial insights ---
+    const expenses   = normalizedRows.filter(r => r.amount < 0);
+    const income     = normalizedRows.filter(r => r.amount > 0);
+    const totalSpent = expenses.reduce((s, r) => s + r.amount, 0);
+    const totalIn    = income.reduce((s, r) => s + r.amount, 0);
+    const net        = totalIn + totalSpent;
+
+    // Recurring: descriptions appearing 2+ times among expenses
+    const descCount = {};
+    expenses.forEach(r => {
+      const key = r.description.toLowerCase().trim();
+      descCount[key] = (descCount[key] || 0) + 1;
+    });
+    const recurring = Object.entries(descCount)
+      .filter(([, n]) => n >= 2)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 5);
+
+    // Top spending categories (simple keyword buckets)
+    const CATEGORIES = {
+      "Food & Dining":    ["restaurant", "cafe", "coffee", "pizza", "burger", "sushi", "mat", "livsmedel", "ica", "coop", "lidl", "willys"],
+      "Transport":        ["uber", "lyft", "taxi", "sl ", "buss", "tåg", "train", "fuel", "bensin", "parkering"],
+      "Subscriptions":    ["netflix", "spotify", "hbo", "apple", "google", "microsoft", "amazon", "adobe", "prenumeration"],
+      "Shopping":         ["amazon", "zalando", "h&m", "zara", "ikea", "elgiganten", "komplett"],
+      "Health":           ["apotek", "gym", "fitness", "doctor", "pharmacy", "health"],
+    };
+    const catTotals = {};
+    expenses.forEach(r => {
+      const desc = r.description.toLowerCase();
+      for (const [cat, keywords] of Object.entries(CATEGORIES)) {
+        if (keywords.some(k => desc.includes(k))) {
+          catTotals[cat] = (catTotals[cat] || 0) + Math.abs(r.amount);
+          return;
+        }
+      }
+      catTotals["Other"] = (catTotals["Other"] || 0) + Math.abs(r.amount);
+    });
+    const topCats = Object.entries(catTotals).sort((a, b) => b[1] - a[1]).slice(0, 5);
+
+    const fmt = n => (n == null || isNaN(n)) ? "—" : n.toLocaleString("sv-SE", { minimumFractionDigits: 2 });
+
+    html += `
+    <div style="display:flex;gap:12px;flex-wrap:wrap;margin:16px 0;">
+      <div style="flex:1;min-width:160px;padding:14px 18px;background:#fff8f0;border-left:4px solid #e07000;border-radius:6px;">
+        <div style="font-size:11px;text-transform:uppercase;color:#888;margin-bottom:4px;">Total Spent</div>
+        <div style="font-size:22px;font-weight:700;color:#c0392b;">${fmt(totalSpent)}</div>
+      </div>
+      <div style="flex:1;min-width:160px;padding:14px 18px;background:#f0fff4;border-left:4px solid #27ae60;border-radius:6px;">
+        <div style="font-size:11px;text-transform:uppercase;color:#888;margin-bottom:4px;">Total Income</div>
+        <div style="font-size:22px;font-weight:700;color:#27ae60;">+${fmt(totalIn)}</div>
+      </div>
+      <div style="flex:1;min-width:160px;padding:14px 18px;background:#f5f5ff;border-left:4px solid #7b5ea7;border-radius:6px;">
+        <div style="font-size:11px;text-transform:uppercase;color:#888;margin-bottom:4px;">Net</div>
+        <div style="font-size:22px;font-weight:700;color:${net >= 0 ? "#27ae60" : "#c0392b"};">${net >= 0 ? "+" : ""}${fmt(net)}</div>
+      </div>
+    </div>`;
+
+    if (topCats.length > 0) {
+      const grandTotal = topCats.reduce((s, [, v]) => s + v, 0) || 1;
+      html += `<div style="margin:16px 0;"><strong>Spending by Category</strong><div style="margin-top:8px;">`;
+      topCats.forEach(([cat, val]) => {
+        const pct = Math.round((val / grandTotal) * 100);
+        html += `<div style="margin-bottom:6px;font-size:13px;">
+          <span style="display:inline-block;width:140px;">${cat}</span>
+          <span style="display:inline-block;background:#e0e0e0;width:180px;height:10px;border-radius:5px;vertical-align:middle;">
+            <span style="display:block;background:#e07000;width:${pct}%;height:10px;border-radius:5px;"></span>
+          </span>
+          <span style="margin-left:8px;">${fmt(val)} (${pct}%)</span>
+        </div>`;
+      });
+      html += `</div></div>`;
+    }
+
+    if (recurring.length > 0) {
+      html += `<div style="margin:16px 0;"><strong>Likely Recurring Payments</strong><ul style="margin-top:6px;">`;
+      recurring.forEach(([desc, count]) => {
+        html += `<li style="font-size:13px;">${desc} — ${count}x</li>`;
+      });
+      html += `</ul></div>`;
+    }
+
+    html += `<table border="1" cellpadding="6" cellspacing="0" style="border-collapse:collapse;width:100%;font-size:13px;margin-top:16px;">
+      <thead><tr style="background:#f5f5f5;"><th>Date</th><th>Description</th><th>Amount</th></tr></thead>
       <tbody>`;
     normalizedRows.forEach(row => {
-      const color = row.amount < 0 ? "red" : "green";
+      const color = row.amount < 0 ? "#c0392b" : "#27ae60";
       html += `<tr>
         <td>${row.date}</td>
         <td>${row.description}</td>
-        <td style="color:${color};text-align:right;">${row.amount}</td>
+        <td style="color:${color};text-align:right;">${fmt(row.amount)}</td>
       </tr>`;
     });
     html += `</tbody></table>`;
