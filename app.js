@@ -157,7 +157,7 @@ function parseCsv(text) {
   });
 }
 
-function handleParsedRows(rows, fileName, fileType) {
+function handleParsedRows(rows, fileName, fileType, filesImported) {
   console.log("Raw rows:", rows);
 
   if (!rows || rows.length === 0) {
