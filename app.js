@@ -62,17 +62,16 @@ function handleFileUpload(event) {
     const fileName = file.name.toLowerCase();
 
     if (fileName.endsWith(".xlsx") || fileName.endsWith(".xls")) {
-      readExcelFile(file, filesImported);
+      readExcelFile(file);
     } else if (fileName.endsWith(".csv")) {
-      readCsvFile(file, filesImported);
+      readCsvFile(file);
     } else {
-      totalFiles--;
-      if (totalFiles === 0) results.textContent = "No supported files found.";
+            if (totalFiles === 0) results.textContent = "No supported files found.";
     }
   }
 }
 
-function readExcelFile(file, filesImported) {
+function readExcelFile(file) {
   const reader = new FileReader();
   reader.onload = async function (e) {
     try {
@@ -126,7 +125,7 @@ function readExcelFile(file, filesImported) {
   reader.readAsArrayBuffer(file);
 }
 
-function readCsvFile(file, filesImported) {
+function readCsvFile(file) {
   const reader = new FileReader();
 
   reader.onload = function (e) {
