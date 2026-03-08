@@ -117,7 +117,7 @@ function readExcelFile(file) {
       console.log("Row at index 9:", allRows[9]);
       console.log("Row at index 10:", allRows[10]);
       filesImported++;
-      handleParsedRows(allRows, file.name, "excel-repacked");
+      handleParsedRows(allRows, file.name, "excel-repacked", filesImported);
 
     } catch (err) {
       console.error("All Excel read methods failed:", err);
