@@ -379,7 +379,50 @@ function normalizeMerchant(description){
   return text.trim();
 }
 
-function detectCategory(description){
+function detectCategory(description)
+
+function detectSubscriptions(transactions){
+
+  const groups = {};
+
+  transactions.forEach(t => {
+
+    if(t.amount >= 0) return;
+
+    const key = t.merchant;
+
+    if(!groups[key]) groups[key] = [];
+
+    groups[key].push(t);
+
+  });
+
+  const subscriptions = [];
+
+  for(const merchant in groups){
+
+    const list = groups[merchant];
+
+    if(list.length < 2) continue;
+
+    const avgAmount =
+      list.reduce((s,t)=>s+Math.abs(t.amount),0)/list.length;
+
+    subscriptions.push({
+      merchant,
+      count:list.length,
+      avgAmount:avgAmount.toFixed(2)
+    });
+
+  }
+
+  return subscriptions;
+
+}
+
+
+
+{
 
   const text = description.toLowerCase();
 
