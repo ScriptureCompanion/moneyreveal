@@ -836,7 +836,7 @@ function normalizeMerchant(description) {
     }
   }
 
-  // best 1–3 word phrase from remaining cleaned text
+  // best 1-3 word phrase from remaining cleaned text
   const phrase = words.slice(0, 3).join(" ");
   return phrase || "unknown";
 }
