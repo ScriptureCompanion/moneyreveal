@@ -208,15 +208,31 @@ function readCsvFile(file) {
 }
 
 function parseCsv(text) {
-  const lines = text
-    .split(/\r?\n/)
-    .filter(line => line.trim() !== "");
+  const lines = text.split(/\r?\n/).filter(line => line.trim() !== "");
+  if (lines.length === 0) return [];
+
+  // Detect delimiter from first line
+  const firstLine = lines[0];
+  const delimiter = (firstLine.split(";").length >= firstLine.split(",").length) ? ";" : ",";
 
   return lines.map(line => {
-    if (line.includes(";")) {
-      return line.split(";").map(cell => cell.trim());
+    const cells = [];
+    let cur = "";
+    let inQuote = false;
+    for (let i = 0; i < line.length; i++) {
+      const ch = line[i];
+      if (inQuote) {
+        if (ch === '"' && line[i + 1] === '"') { cur += '"'; i++; }
+        else if (ch === '"') { inQuote = false; }
+        else { cur += ch; }
+      } else {
+        if (ch === '"') { inQuote = true; }
+        else if (ch === delimiter) { cells.push(cur.trim()); cur = ""; }
+        else { cur += ch; }
+      }
     }
-    return line.split(",").map(cell => cell.trim());
+    cells.push(cur.trim());
+    return cells;
   });
 }
 
@@ -439,6 +455,47 @@ function detectColumns(headerRow) {
   return cols;
 }
 
+function normalizeDate(value) {
+  if (value == null || value === "") return "";
+
+  // JS Date object (from SheetJS cellDates:true)
+  if (value instanceof Date) {
+    if (isNaN(value)) return "";
+    return value.toISOString().slice(0, 10);
+  }
+
+  // Excel serial number (e.g. 45123)
+  if (typeof value === "number") {
+    // Excel epoch: Dec 30 1899
+    const excelEpoch = new Date(Date.UTC(1899, 11, 30));
+    const ms = excelEpoch.getTime() + value * 86400000;
+    const d = new Date(ms);
+    if (isNaN(d)) return "";
+    return d.toISOString().slice(0, 10);
+  }
+
+  const s = String(value).trim();
+
+  // YYYY-MM-DD or YYYY-MM-DD HH:mm:ss
+  if (/^\d{4}-\d{2}-\d{2}/.test(s)) return s.slice(0, 10);
+
+  // YYYY/MM/DD
+  if (/^\d{4}\/\d{2}\/\d{2}/.test(s)) return s.slice(0, 10).replace(/\//g, "-");
+
+  // YYYYMMDD
+  if (/^\d{8}$/.test(s)) return `${s.slice(0,4)}-${s.slice(4,6)}-${s.slice(6,8)}`;
+
+  // DD/MM/YYYY
+  const dmy1 = /^(\d{2})\/(\d{2})\/(\d{4})/.exec(s);
+  if (dmy1) return `${dmy1[3]}-${dmy1[2]}-${dmy1[1]}`;
+
+  // DD-MM-YYYY
+  const dmy2 = /^(\d{2})-(\d{2})-(\d{4})/.exec(s);
+  if (dmy2) return `${dmy2[3]}-${dmy2[2]}-${dmy2[1]}`;
+
+  return s; // return as-is and let the existing date filter handle it
+}
+
 function normalizeRows(rows) {
   const transactions = [];
 
@@ -465,7 +522,7 @@ function normalizeRows(rows) {
   for (let i = startIndex; i < rows.length; i++) {
     const row = rows[i];
     if (!row || row.length < 2) continue;
-    const date        = String(row[cols.date]        ?? "").trim();
+    const date        = normalizeDate(row[cols.date] ?? "");
     const description = String(row[cols.description] ?? "").trim();
     const rawAmt      = String(row[cols.amount]      ?? "").trim();
     const amount      = parseAmount(rawAmt);
@@ -493,20 +550,35 @@ transactions.push({
 }
 
 function parseAmount(value) {
-  if (!value) return null;
+  if (value == null || value === "") return null;
 
   let cleaned = String(value).trim();
 
+  // Strip currency prefixes like "SEK"
+  cleaned = cleaned.replace(/^[A-Z]{2,3}\s*/i, "");
+
+  // Handle trailing minus: "123,45-" → "-123,45"
+  const trailingMinus = cleaned.endsWith("-");
+  if (trailingMinus) cleaned = cleaned.slice(0, -1);
+
+  // Handle parentheses for negatives: "(123,45)" → "-123.45"
+  const parenNeg = /^\(([^)]+)\)$/.exec(cleaned);
+  if (parenNeg) cleaned = "-" + parenNeg[1];
+
+  // Remove whitespace
   cleaned = cleaned.replace(/\s/g, "");
 
+  // Determine decimal separator
   if (cleaned.includes(",") && cleaned.includes(".")) {
+    // e.g. "1.234,56" — dot is thousands, comma is decimal
     cleaned = cleaned.replace(/\./g, "").replace(",", ".");
   } else if (cleaned.includes(",")) {
     cleaned = cleaned.replace(",", ".");
   }
 
   const num = Number(cleaned);
-  return Number.isNaN(num) ? null : num;
+  if (Number.isNaN(num)) return null;
+  return trailingMinus ? -Math.abs(num) : num;
 }
 
 function normalizeMerchant(description) {
