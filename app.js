@@ -4,43 +4,134 @@ const results = document.getElementById("results");
 const CATEGORY_KEYWORDS = {
 
   "Food & Dining": [
-    "ica","coop","lidl","willy","hemköp",
-    "restaurant","pizza","burger","cafe","coffee",
+    "ica","coop","lidl","willys","hemköp","hemkop",
+    "restaurant","restaurang","pizza","burger","cafe","coffee","kafé",
     "espresso house","max","mcdonald","burger king",
-    "pressbyrån","systembolaget"
+    "pressbyrån","pressbyran","systembolaget","mat","livsmedel"
   ],
 
   "Transport": [
-    "uber","bolt","taxi","sl","sj",
-    "buss","tåg","train",
-    "shell","circle","okq8","preem",
-    "fuel","bensin","parkering"
+    "uber","bolt","taxi","sl","sj","mtab","skånetrafiken","vasttrafik",
+    "buss","tåg","train","flyg","ryanair","sas","norwegian",
+    "shell","circle k","okq8","preem","st1",
+    "fuel","bensin","diesel","parkering","p-hus","p-avgift",
+    "trängselskatt","congestion"
   ],
 
-  "Subscriptions": [
-    "spotify","netflix","youtube","apple","google",
-    "microsoft","hbo","adobe","icloud",
-    "prime","dropbox","shopify"
+  "Travel": [
+    "hotel","hotell","airbnb","booking.com","expedia","hotels.com",
+    "trivago","hostel","resort","hyra bil","avis","hertz","europcar",
+    "airport","flygplats","kryssning"
   ],
 
-  "Shopping": [
-    "amazon","zalando","ikea","hm","h&m",
-    "clas ohlson","biltema","jula",
-    "elgiganten","media markt"
+  "Software & SaaS": [
+    "spotify","netflix","youtube","hbo","prime video","viaplay","disney",
+    "apple","icloud","itunes","google","google play","microsoft","office 365",
+    "adobe","dropbox","slack","zoom","notion","figma","github","gitlab",
+    "atlassian","jira","trello","hubspot","salesforce","pipedrive",
+    "mailchimp","mailerlite","canva","intercom","typeform","zapier",
+    "loom","calendly","clickup","airtable","webflow","squarespace",
+    "wix","wordpress","elementor","chatgpt","openai","anthropic"
+  ],
+
+  "Accounting & Admin": [
+    "fortnox","visma","bokio","pe accounting","speedledger",
+    "skatteverket","bolagsverket","kronofogden",
+    "revisor","redovisning","bokföring","årsredovisning",
+    "accountor","pwc","kpmg","deloitte","ey "
+  ],
+
+  "Marketing": [
+    "meta","facebook ads","facebook","instagram","google ads","adwords",
+    "linkedin ads","linkedin","twitter ads","tiktok ads","snapchat ads",
+    "mailerlite","mailchimp","klaviyo","activecampaign","sendinblue",
+    "canva","semrush","ahrefs","hotjar","unbounce","leadpages",
+    "printful","tryck","reklam","annons"
+  ],
+
+  "Telecom & Internet": [
+    "telia","tele2","telenor","tre","3 sverige","comviq","hallon","vimla",
+    "bahnhof","bredband","halebop","boxer","telesur","ip-only",
+    "mobilabonnemang","bredbandsabonnemang","internet","telefoni","mobil"
+  ],
+
+  "Office Supplies": [
+    "kontorsmaterial","staples","officedepot","papyrus","apax",
+    "kontorsvaror","pennor","papper","skrivare","bläck","toner",
+    "reco","lyreco"
+  ],
+
+  "Shipping & Postage": [
+    "postnord","posten","dhl","fedex","ups","schenker","bring","budbee",
+    "instabox","airmee","frakt","porto","paket","leverans","courier"
+  ],
+
+  "Rent & Premises": [
+    "hyra","hyresavi","lokalhyra","kontorshyra","sublease",
+    "fastighetsägare","brf","hsb","riksbyggen","hyresvärd"
+  ],
+
+  "Utilities": [
+    "el","elbolag","vattenfall","eon","fortum","tibber","bixia",
+    "vatten","fjärrvärme","gas","sophämtning","avfall","renhållning",
+    "elnät","elöverföring"
+  ],
+
+  "Insurance": [
+    "försäkring","folksam","if försäkring","trygg hansa","länsförsäkringar",
+    "skandia","alecta","afa","premie","insurance","hemförsäkring",
+    "företagsförsäkring","olycksfallsförsäkring"
   ],
 
   "Health": [
-    "apotek","apoteket","kronans","hjartat",
-    "pharmacy","doctor","clinic",
-    "gym","fitness","sats"
+    "apotek","apoteket","kronans","apotek hjartat","lloyds apotek",
+    "pharmacy","doctor","läkare","klinik","clinic","tandläkare","tandvård",
+    "gym","fitness","sats","actic","nordic wellness","sjukvård","friskvård",
+    "optiker","synoptik","specsavers"
   ],
 
-  "Finance": [
-    "klarna","paypal","swish"
+  "Education": [
+    "kurs","utbildning","konferens","seminarium","workshop","webinar",
+    "udemy","coursera","linkedin learning","pluralsight","skillshare",
+    "bok","böcker","bokus","adlibris","kompendium"
   ],
 
-  "Business Services": [
-    "fortnox","loopia","one","shopify"
+  "Shopping & Equipment": [
+    "amazon","zalando","ikea","hm","h&m","clas ohlson","biltema","jula",
+    "elgiganten","media markt","webhallen","dustin","komplett","inet",
+    "kjell","kjell och company","netonnet","tretti","stadium","decathlon",
+    "verktyg","utrustning","inköp","equipment"
+  ],
+
+  "Banking & Fees": [
+    "bankavgift","kontoavgift","kortavgift","årsavgift","serviceavgift",
+    "avgift","aviavgift","aviiseringsavgift",
+    "ränta","räntekostnad","dröjsmålsränta","övertrasseringsavgift",
+    "valutaväxling","exchange fee","swift","banköverföring"
+  ],
+
+  "Loans & Credit": [
+    "amortering","lånebetalning","lån","kredit","kreditfaktura",
+    "klarna","resurs bank","ikano","seb lån","nordea lån",
+    "leasing","avbetalning","skuld"
+  ],
+
+  "Taxes": [
+    "skatteverket","f-skatt","a-skatt","moms","arbetsgivaravgift",
+    "preliminärskatt","arbetsgivare","sociala avgifter","skatteåterbäring",
+    "skattebetalning","skattsedel","trängselskatt"
+  ],
+
+  "Payroll & Owner Draw": [
+    "lön","lönebetalning","löneuttag","eget uttag","uttag",
+    "utbetalning lön","personalkostnad","arvode","konsultarvode",
+    "dividend","utdelning","lönespecifikation"
+  ],
+
+  "Transfers & Internal": [
+    "överföring","överf","överf mobil","stående överf","autogiro",
+    "bg ","pg ","bankgiro","plusgiro","intern","interntransfer",
+    "sparande","flytt","swish"
   ]
 
 };
