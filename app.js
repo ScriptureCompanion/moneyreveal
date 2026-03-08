@@ -89,7 +89,7 @@ function readExcelFile(file, filesImported) {
           const rows = XLSX.utils.sheet_to_json(ws, { header: 1, defval: "" });
           allRows.push(...rows);
         });
-                handleParsedRows(allRows, file.name, "excel", filesImported);
+                handleParsedRows(allRows, file.name, "excel");
         return;
       } catch (directErr) {
         console.warn("SheetJS direct failed, trying JSZip repack:", directErr.message);
@@ -116,7 +116,7 @@ function readExcelFile(file, filesImported) {
       console.log("First 3 rows:", allRows.slice(0, 3));
       console.log("Row at index 9:", allRows[9]);
       console.log("Row at index 10:", allRows[10]);
-      handleParsedRows(allRows, file.name, "excel-repacked", filesImported);
+      handleParsedRows(allRows, file.name, "excel-repacked");
 
     } catch (err) {
       console.error("All Excel read methods failed:", err);
@@ -133,7 +133,7 @@ function readCsvFile(file, filesImported) {
     try {
       const text = e.target.result;
       const rows = parseCsv(text);
-            handleParsedRows(rows, file.name, "csv", filesImported);
+            handleParsedRows(rows, file.name, "csv");
     } catch (error) {
       console.error(error);
       results.textContent = "Could not read CSV file.";
@@ -156,13 +156,14 @@ function parseCsv(text) {
   });
 }
 
-function handleParsedRows(rows, fileName, fileType, filesImported) {
+function handleParsedRows(rows, fileName, fileType) {
   console.log("Raw rows:", rows);
 
   if (!rows || rows.length === 0) {
     results.textContent = "No rows found in file.";
     return;
   }
+  filesImported += 1;
 
   const previewRows = rows.slice(0, 8);
  const normalizedRows = normalizeRows(rows);
@@ -178,8 +179,7 @@ function handleParsedRows(rows, fileName, fileType, filesImported) {
   });
   allTransactions = Array.from(uniqueMap.values());
   allTransactions.sort((a, b) => new Date(b.date) - new Date(a.date));
-  filesImported++;
-
+  
   const allDates = allTransactions.map(t => new Date(t.date)).filter(d=>!isNaN(d));
 const minDate = allDates.length ? new Date(Math.min(...allDates)).toISOString().slice(0,10) : "—";
 const maxDate = allDates.length ? new Date(Math.max(...allDates)).toISOString().slice(0,10) : "—";
