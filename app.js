@@ -334,3 +334,18 @@ function parseAmount(value) {
   const num = Number(cleaned);
   return Number.isNaN(num) ? null : num;
 }
+function detectCategory(description){
+
+  const text = description.toLowerCase();
+
+  for(const merchant in MERCHANT_CATEGORIES){
+
+    if(text.includes(merchant)){
+      return MERCHANT_CATEGORIES[merchant];
+    }
+
+  }
+
+  return "Other";
+
+}
