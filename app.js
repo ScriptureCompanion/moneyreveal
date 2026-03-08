@@ -170,13 +170,6 @@ function handleParsedRows(rows, fileName, fileType) {
       .slice(0, 5);
 
     // Top spending categories (simple keyword buckets)
-    const CATEGORIES = {
-      "Food & Dining":    ["restaurant", "cafe", "coffee", "pizza", "burger", "sushi", "mat", "livsmedel", "ica", "coop", "lidl", "willys"],
-      "Transport":        ["uber", "lyft", "taxi", "sl ", "buss", "tåg", "train", "fuel", "bensin", "parkering"],
-      "Subscriptions":    ["netflix", "spotify", "hbo", "apple", "google", "microsoft", "amazon", "adobe", "prenumeration"],
-      "Shopping":         ["amazon", "zalando", "h&m", "zara", "ikea", "elgiganten", "komplett"],
-      "Health":           ["apotek", "gym", "fitness", "doctor", "pharmacy", "health"],
-    };
     const catTotals = {};
    expenses.forEach(r => {
   const cat = r.category || "Other";
