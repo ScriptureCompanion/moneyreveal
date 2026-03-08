@@ -56,6 +56,7 @@ function handleFileUpload(event) {
   const files = event.target.files;
   if (!files || files.length === 0) return;
  
+  filesImported = 0;
   results.textContent = `Reading ${files.length} file(s)...`;
 
   for (const file of files) {
