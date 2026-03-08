@@ -449,24 +449,15 @@ function parseAmount(value) {
 }
 
 function normalizeMerchant(description) {
-  let text = description.toLowerCase();
+  const text = description.toLowerCase();
 
-  text = text.replace(/[0-9]/g,"");
-  text = text.replace(/[^a-zåäö\s]/g,"");
-
-  if(text.includes("ica")) return "ica";
-  if(text.includes("coop")) return "coop";
-  if(text.includes("willy")) return "willys";
-  if(text.includes("lidl")) return "lidl";
-
-  if(text.includes("spotify")) return "spotify";
-  if(text.includes("netflix")) return "netflix";
-
-  if(text.includes("shell")) return "shell";
-  if(text.includes("circle k")) return "circle k";
-
-  if(text.includes("amazon")) return "amazon";
-  if(text.includes("ikea")) return "ikea";
+  for (const merchant in MERCHANT_ALIASES) {
+    for (const alias of MERCHANT_ALIASES[merchant]) {
+      if (text.includes(alias)) {
+        return merchant;
+      }
+    }
+  }
 
   return text.trim();
 }
