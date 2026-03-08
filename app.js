@@ -4,42 +4,107 @@ const results = document.getElementById("results");
 const CATEGORY_KEYWORDS = {
 
   "Food & Dining": [
-    "ica","coop","lidl","willy","hemköp","pressbyrån",
-    "restaurant","pizza","burger","cafe","coffee","sushi","bar"
+    "ica","coop","lidl","willy","hemköp",
+    "restaurant","pizza","burger","cafe","coffee",
+    "espresso house","max","mcdonald","burger king",
+    "pressbyrån","systembolaget"
   ],
 
   "Transport": [
-    "uber","bolt","taxi","sl ","buss","tåg","train",
-    "shell","circle","okq8","fuel","bensin","parkering"
+    "uber","bolt","taxi","sl","sj",
+    "buss","tåg","train",
+    "shell","circle","okq8","preem",
+    "fuel","bensin","parkering"
   ],
 
   "Subscriptions": [
     "spotify","netflix","youtube","apple","google",
-    "microsoft","hbo","adobe","icloud","prime"
+    "microsoft","hbo","adobe","icloud",
+    "prime","dropbox","shopify"
   ],
 
   "Shopping": [
-    "amazon","zalando","ikea","hm","h&m","zara",
-    "elgiganten","media markt","komplett"
+    "amazon","zalando","ikea","hm","h&m",
+    "clas ohlson","biltema","jula",
+    "elgiganten","media markt"
   ],
 
   "Health": [
-    "apotek","pharmacy","doctor","clinic","gym","fitness"
+    "apotek","apoteket","kronans","hjartat",
+    "pharmacy","doctor","clinic",
+    "gym","fitness","sats"
+  ],
+
+  "Finance": [
+    "klarna","paypal","swish"
+  ],
+
+  "Business Services": [
+    "fortnox","loopia","one","shopify"
   ]
 
 };
 const MERCHANT_ALIASES = {
-  "ica": ["ica", "ica nara", "ica supermarket"],
-  "coop": ["coop", "coop konsum"],
+
+  "ica": ["ica","ica supermarket","ica kvantum","ica nara"],
+  "coop": ["coop","coop konsum","coop forum"],
   "willys": ["willys"],
   "lidl": ["lidl"],
+  "hemköp": ["hemköp","hemkop"],
+
+  "systembolaget": ["systembolaget"],
+
+  "espresso house": ["espresso house"],
+  "pressbyrån": ["pressbyrån","pressbyran"],
+  "max": ["max burger","max"],
+  "burger king": ["burger king"],
+  "mcdonald": ["mcdonald","mcdonalds"],
+
   "shell": ["shell"],
-  "circle k": ["circle k", "circlek"],
+  "circle k": ["circle k","circlek"],
+  "okq8": ["okq8"],
+  "preem": ["preem"],
+
+  "uber": ["uber"],
+  "bolt": ["bolt"],
+  "taxi": ["taxi"],
+
+  "sj": ["sj","statens jarnvagar"],
+  "sl": ["sl","storstockholms lokaltrafik"],
+
   "spotify": ["spotify"],
   "netflix": ["netflix"],
-  "apple": ["apple", "itunes", "apple.com"],
-  "google": ["google"],
-  "amazon": ["amazon"]
+  "youtube": ["youtube"],
+  "apple": ["apple","itunes","apple.com"],
+  "google": ["google","google play"],
+  "microsoft": ["microsoft"],
+  "adobe": ["adobe"],
+  "dropbox": ["dropbox"],
+  "icloud": ["icloud"],
+
+  "amazon": ["amazon"],
+  "zalando": ["zalando"],
+  "ikea": ["ikea"],
+  "h&m": ["hm","h&m"],
+  "clas ohlson": ["clas ohlson"],
+  "biltema": ["biltema"],
+  "jula": ["jula"],
+  "elgiganten": ["elgiganten"],
+  "media markt": ["media markt"],
+
+  "apoteket": ["apoteket"],
+  "kronans apotek": ["kronans","kronans apotek"],
+  "apotek hjartat": ["apotek hjartat"],
+
+  "klarna": ["klarna"],
+  "paypal": ["paypal"],
+  "swish": ["swish"],
+
+  "fortnox": ["fortnox"],
+  "loopia": ["loopia"],
+  "one": ["one.com"],
+  "shopify": ["shopify"]
+
 };
 
 let allTransactions = [];
