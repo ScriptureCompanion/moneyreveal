@@ -134,7 +134,7 @@ function readCsvFile(file) {
     try {
       const text = e.target.result;
       const rows = parseCsv(text);
-            handleParsedRows(rows, file.name, "csv");
+            handleParsedRows(rows, file.name, "csv", filesImported);
     } catch (error) {
       console.error(error);
       results.textContent = "Could not read CSV file.";
