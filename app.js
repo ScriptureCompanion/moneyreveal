@@ -198,6 +198,16 @@ const MERCHANT_ALIASES = {
 
 };
 
+function getBestSheet(workbook) {
+  let bestRows = [];
+  for (const name of workbook.SheetNames) {
+    const ws = workbook.Sheets[name];
+    const rows = XLSX.utils.sheet_to_json(ws, { header: 1, defval: "" });
+    if (rows.length > bestRows.length) bestRows = rows;
+  }
+  return bestRows;
+}
+
 let allTransactions = [];
 let filesImported = 0;
 
@@ -240,12 +250,7 @@ function readExcelFile(file) {
         const arr = new Uint8Array(data);
         const workbook = XLSX.read(arr, { type: "array", cellDates: true });
         console.log("Sheet names:", workbook.SheetNames);
-        const allRows = [];
-        workbook.SheetNames.forEach(name => {
-          const ws = workbook.Sheets[name];
-          const rows = XLSX.utils.sheet_to_json(ws, { header: 1, defval: "" });
-          allRows.push(...rows);
-        });
+        const allRows = getBestSheet(workbook);
                 handleParsedRows(allRows, file.name, "excel");
         return;
       } catch (directErr) {
@@ -264,12 +269,7 @@ function readExcelFile(file) {
       const repackedData = await repackedZip.generateAsync({ type: "uint8array" });
       const workbook = XLSX.read(repackedData, { type: "array", cellDates: true });
       console.log("Sheet names:", workbook.SheetNames);
-      const allRows = [];
-      workbook.SheetNames.forEach(name => {
-        const ws = workbook.Sheets[name];
-        const rows = XLSX.utils.sheet_to_json(ws, { header: 1, defval: "" });
-        allRows.push(...rows);
-      });
+      const allRows = getBestSheet(workbook);
       console.log("First 3 rows:", allRows.slice(0, 3));
       console.log("Row at index 9:", allRows[9]);
       console.log("Row at index 10:", allRows[10]);
