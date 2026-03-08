@@ -1,8 +1,7 @@
 const fileInput = document.getElementById("fileInput");
 const results = document.getElementById("results");
-const MERCHANT_CATEGORIES = {
 
-  const CATEGORY_KEYWORDS = {
+const CATEGORY_KEYWORDS = {
 
   "Food & Dining": [
     "ica","coop","lidl","willy","hemköp","pressbyrån",
