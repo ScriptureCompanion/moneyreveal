@@ -476,3 +476,14 @@ function detectSubscriptions(transactions){
   return "Other";
 
 }
+function estimateMonthlySpending(transactions) {
+  const expenses = transactions.filter(r => r.amount < 0);
+  if (expenses.length === 0) return 0;
+  const dates = expenses.map(r => new Date(r.date)).filter(d => !isNaN(d));
+  if (dates.length < 2) return Math.abs(expenses.reduce((s, r) => s + r.amount, 0));
+  const minDate = new Date(Math.min(...dates));
+  const maxDate = new Date(Math.max(...dates));
+  const days = Math.max(1, (maxDate - minDate) / (1000 * 60 * 60 * 24));
+  const total = Math.abs(expenses.reduce((s, r) => s + r.amount, 0));
+  return (total / days) * 30;
+}
