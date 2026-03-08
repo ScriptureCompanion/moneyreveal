@@ -388,12 +388,17 @@ function normalizeMerchant(description){
 }
 
 function detectCategory(description){
- const text = normalizeMerchant(description);
 
-  for(const merchant in MERCHANT_CATEGORIES){
+  const text = description.toLowerCase();
 
-    if(text.includes(merchant)){
-      return MERCHANT_CATEGORIES[merchant];
+  for(const [category, keywords] of Object.entries(CATEGORY_KEYWORDS)){
+
+    for(const keyword of keywords){
+
+      if(text.includes(keyword)){
+        return category;
+      }
+
     }
 
   }
