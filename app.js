@@ -676,47 +676,43 @@ function parseAmount(value) {
 
   let cleaned = String(value).trim();
 
-  // Strip currency prefix like "SEK", "EUR", "USD" (2-3 uppercase letters optionally followed by space)
+  // 1. Strip currency prefix: "SEK", "EUR", "USD" etc
   cleaned = cleaned.replace(/^[A-Z]{2,3}\s*/i, "");
-
-  // Strip any remaining leading/trailing whitespace after currency strip
   cleaned = cleaned.trim();
 
-  // Handle trailing minus: "123,45-" → will be flagged and made negative at end
+  // 2. Trailing minus: "123,45-" → negativ
   const trailingMinus = cleaned.endsWith("-");
   if (trailingMinus) cleaned = cleaned.slice(0, -1);
 
-  // Handle parentheses for negatives: "(123,45)" → "-123.45"
+  // 3. Parenteser som negativ: "(123,45)" → "-123,45"
   const parenNeg = /^\(([^)]+)\)$/.exec(cleaned);
   if (parenNeg) cleaned = "-" + parenNeg[1];
 
-  // Capture and strip leading minus so we can clean the numeric part safely
+  // 4. Extrahera och spara ledande minus: "-123,45"
   let leadingMinus = false;
   if (cleaned.startsWith("-")) {
     leadingMinus = true;
     cleaned = cleaned.slice(1).trim();
   }
 
-  // Remove all whitespace (space as thousands separator, e.g. "1 234,56")
+  // 5. Ta bort mellanslag (tusentalsavskiljare: "1 234,56")
   cleaned = cleaned.replace(/\s/g, "");
 
-  // Normalise thousand/decimal separators
+  // 6. Normalisera decimal/tusentalsavskiljare
   if (cleaned.includes(",") && cleaned.includes(".")) {
-    // Ambiguous: whichever comes last is the decimal separator
     const lastComma = cleaned.lastIndexOf(",");
     const lastDot   = cleaned.lastIndexOf(".");
     if (lastComma > lastDot) {
-      // European: "1.234,56" — dot = thousands, comma = decimal
+      // Europeiskt: "1.234,56" → punkt=tusental, komma=decimal
       cleaned = cleaned.replace(/\./g, "").replace(",", ".");
     } else {
-      // US: "1,234.56" — comma = thousands, dot = decimal
+      // Amerikanskt: "1,234.56" → komma=tusental
       cleaned = cleaned.replace(/,/g, "");
     }
   } else if (cleaned.includes(",")) {
-    // Only comma present — treat as decimal separator
+    // Bara komma → decimalavskiljare
     cleaned = cleaned.replace(",", ".");
   }
-  // If only dots present, leave as-is (standard float string)
 
   const num = Number(cleaned);
   if (Number.isNaN(num)) return null;
