@@ -568,7 +568,7 @@ function normalizeDate(value) {
   const s = String(value).trim();
 
   // YYYY-MM-DD or YYYY-MM-DD HH:mm:ss
-  if (/^\d{4}-\d{2}-\d{2}/.test(s)) return s.slice(0, 10);
+  if (/^\d{4}-\d{2}-\d{2}/.test(s)) return s.slice(0, 10).replace("T", " ").slice(0, 10);
 
   // YYYY/MM/DD
   if (/^\d{4}\/\d{2}\/\d{2}/.test(s)) return s.slice(0, 10).replace(/\//g, "-");
