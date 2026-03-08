@@ -72,7 +72,7 @@ function handleFileUpload(event) {
   }
 }
 
-function readExcelFile(file) {
+function readExcelFile(file, filesImported) {
   const reader = new FileReader();
   reader.onload = async function (e) {
     try {
