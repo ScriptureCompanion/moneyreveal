@@ -29,8 +29,6 @@ const CATEGORY_KEYWORDS = {
 
 };
 let allTransactions = [];
-let filesProcessed = 0;
-let totalFiles = 0;
 
 fileInput.addEventListener("change", handleFileUpload);
 
