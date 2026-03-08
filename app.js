@@ -176,9 +176,9 @@ const mergedTransactions = Array.from(uniqueMap.values());
   filesProcessed = 0;
   totalFiles = 0;
 
-  let html = `<p><strong>Files imported:</strong> ${importedCount} &nbsp; <strong>Transactions:</strong> ${transactionCount}</p>`;
+ let html = `<p><strong>Files imported:</strong> ${importedCount} &nbsp; <strong>Transactions:</strong> ${transactionCount}</p>`;
 
-  if (mergedTransactions.length > 0) {
+  if (transactionCount > 0) {
     const expenses   = mergedTransactions.filter(r => r.amount < 0);
     const income     = mergedTransactions.filter(r => r.amount > 0);
     const totalSpent = expenses.reduce((s, r) => s + r.amount, 0);
