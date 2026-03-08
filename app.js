@@ -335,8 +335,31 @@ function parseAmount(value) {
   const num = Number(cleaned);
   return Number.isNaN(num) ? null : num;
 }
-function detectCategory(description){
+function normalizeMerchant(description){
 
+  let text = description.toLowerCase();
+
+  text = text.replace(/[0-9]/g,"");
+  text = text.replace(/[^a-zåäö\s]/g,"");
+
+  if(text.includes("ica")) return "ica";
+  if(text.includes("coop")) return "coop";
+  if(text.includes("willy")) return "willys";
+  if(text.includes("lidl")) return "lidl";
+
+  if(text.includes("spotify")) return "spotify";
+  if(text.includes("netflix")) return "netflix";
+
+  if(text.includes("shell")) return "shell";
+  if(text.includes("circle k")) return "circle k";
+
+  if(text.includes("amazon")) return "amazon";
+  if(text.includes("ikea")) return "ikea";
+
+  return text.trim();
+}
+
+function detectCategory(description){
   const text = description.toLowerCase();
 
   for(const merchant in MERCHANT_CATEGORIES){
