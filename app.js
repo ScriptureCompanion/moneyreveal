@@ -160,12 +160,12 @@ function handleParsedRows(rows, fileName, fileType) {
   if (filesProcessed < totalFiles) return;
 
   // All files loaded — deduplicate
-  const uniqueMap = new Map();
-  allTransactions.forEach(t => {
-    const key = t.date + t.description + t.amount;
-    uniqueMap.set(key, t);
-  });
-  const mergedTransactions = Array.from(uniqueMap.values());
+ const uniqueMap = new Map();
+allTransactions.forEach(t => {
+  const key = t.date + t.description + t.amount;
+  uniqueMap.set(key, t);
+});
+const mergedTransactions = Array.from(uniqueMap.values());
   mergedTransactions.sort((a, b) => b.date.localeCompare(a.date));
 
   // Reset globals
