@@ -173,10 +173,6 @@ const subscriptions = detectSubscriptions(normalizedRows);
     const monthlyEstimate = estimateMonthlySpending(normalizedRows);
 
    console.log(subscriptions);
-   
-      .filter(([, n]) => n >= 2)
-      .sort((a, b) => b[1] - a[1])
-      .slice(0, 5);
 
     // Top spending categories (simple keyword buckets)
     const catTotals = {};
@@ -347,34 +343,7 @@ transactions.push({
   return transactions;
 }
 
-function parseAmount(value)
-function normalizeMerchant(description){
-
-  let text = description.toLowerCase();
-
-  text = text.replace(/[0-9]/g,"");
-  text = text.replace(/[^a-zåäö\s]/g,"");
-
-  if(text.includes("ica")) return "ica";
-  if(text.includes("coop")) return "coop";
-  if(text.includes("willy")) return "willys";
-  if(text.includes("lidl")) return "lidl";
-
-  if(text.includes("spotify")) return "spotify";
-  if(text.includes("netflix")) return "netflix";
-
-  if(text.includes("shell")) return "shell";
-  if(text.includes("circle k")) return "circle k";
-
-  if(text.includes("amazon")) return "amazon";
-  if(text.includes("ikea")) return "ikea";
-
-  return text.trim();
-}
-
-
-
-{
+function parseAmount(value) {
   if (!value) return null;
 
   let cleaned = String(value).trim();
@@ -390,8 +359,8 @@ function normalizeMerchant(description){
   const num = Number(cleaned);
   return Number.isNaN(num) ? null : num;
 }
-function normalizeMerchant(description){
 
+function normalizeMerchant(description) {
   let text = description.toLowerCase();
 
   text = text.replace(/[0-9]/g,"");
@@ -414,7 +383,23 @@ function normalizeMerchant(description){
   return text.trim();
 }
 
-function detectCategory(description)
+function detectCategory(description) {
+  const text = description.toLowerCase();
+
+  for(const [category, keywords] of Object.entries(CATEGORY_KEYWORDS)){
+
+    for(const keyword of keywords){
+
+      if(text.includes(keyword)){
+        return category;
+      }
+
+    }
+
+  }
+
+  return "Other";
+}
 
 function detectSubscriptions(transactions){
 
@@ -455,27 +440,6 @@ function detectSubscriptions(transactions){
 
 }
 
-
-
-{
-
-  const text = description.toLowerCase();
-
-  for(const [category, keywords] of Object.entries(CATEGORY_KEYWORDS)){
-
-    for(const keyword of keywords){
-
-      if(text.includes(keyword)){
-        return category;
-      }
-
-    }
-
-  }
-
-  return "Other";
-
-}
 function estimateMonthlySpending(transactions) {
   const expenses = transactions.filter(r => r.amount < 0);
   if (expenses.length === 0) return 0;
