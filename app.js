@@ -287,21 +287,20 @@ const { subscriptions, recurringMerchants } = detectSubscriptions(allTransaction
     }
 
    if(subscriptions.length > 0){
+      html += `<div style="margin:16px 0;"><strong>Detected Subscriptions</strong><ul style="margin-top:6px;">`;
+      subscriptions.slice(0,5).forEach(s => {
+        html += `<li style="font-size:13px;">${s.merchant} – ~${s.avgAmount} kr / month (${s.count}x)</li>`;
+      });
+      html += `</ul></div>`;
+    }
 
-  html += `<div style="margin:16px 0;">
-  <strong>Detected Subscriptions</strong>
-  <ul style="margin-top:6px;">`;
-
-  subscriptions.slice(0,5).forEach(s => {
-
-    html += `<li style="font-size:13px;">
-    ${s.merchant} – ~${s.avgAmount} per payment (${s.count}x)
-    </li>`;
-
-  });
-
-  html += `</ul></div>`;
-}
+    if(recurringMerchants.length > 0){
+      html += `<div style="margin:16px 0;"><strong>Recurring Merchants</strong><ul style="margin-top:6px;">`;
+      recurringMerchants.slice(0,5).forEach(s => {
+        html += `<li style="font-size:13px;">${s.merchant} – ~${s.avgAmount} kr avg (${s.count}x)</li>`;
+      });
+      html += `</ul></div>`;
+    }
 
 // Top Merchants
     const merchantTotals = {};
