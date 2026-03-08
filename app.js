@@ -558,14 +558,23 @@ const { subscriptions, recurringMerchants } = detectSubscriptions(allTransaction
 
 // --- Column alias map: maps bank-specific header names to normalized keys ---
 const COLUMN_ALIASES = {
-  date:        ["datum", "date", "transaktionsdatum", "bookingdate", "booking date", "valuedate", "transaction date", "fecha"],
-  description: ["beskrivning", "text", "description", "merchant", "payee", "name", "mottagare", "transaktion", "details", "memo", "reference"],
-  amount:      ["belopp", "amount", "amount (sek)", "sum", "debit/credit", "transaktionsbelopp", "value", "importe"],
-  balance:     ["saldo", "balance", "running balance", "saldo efter transaktion"]
+  date:            ["datum", "date", "fecha"],
+  bookingDate:     ["bokföringsdatum", "bokfdatum", "bokf datum", "booking date", "bookingdate", "buchungsdatum"],
+  transactionDate: ["transaktionsdatum", "transaction date", "transactiondate", "valuedate", "value date", "handelsdatum"],
+  description:     ["beskrivning", "text", "description", "merchant", "payee", "name", "mottagare", "transaktion", "details", "memo", "transaction text", "avsändare", "namn"],
+  description2:    ["referens", "reference", "meddelande", "message", "ocr", "kommentar", "comment", "note", "notering"],
+  amount:          ["belopp", "amount", "amount (sek)", "belopp sek", "sum", "total", "transaktionsbelopp", "value", "importe", "debit/credit"],
+  debit:           ["debet", "uttag", "ut", "belopp ut", "debit amount", "debit", "withdrawals", "withdrawal"],
+  credit:          ["kredit", "insättning", "in", "belopp in", "credit amount", "credit", "deposits", "deposit"],
+  balance:         ["saldo", "balance", "running balance", "available balance", "saldo efter transaktion"]
 };
 
 function detectColumns(headerRow) {
-  const cols = { date: -1, description: -1, amount: -1, balance: -1 };
+  const cols = {
+    date: -1, bookingDate: -1, transactionDate: -1,
+    description: -1, description2: -1,
+    amount: -1, debit: -1, credit: -1, balance: -1
+  };
   headerRow.forEach((cell, i) => {
     const normalized = String(cell).toLowerCase().trim();
     for (const [key, aliases] of Object.entries(COLUMN_ALIASES)) {
@@ -644,11 +653,36 @@ function normalizeRows(rows) {
   for (let i = startIndex; i < rows.length; i++) {
     const row = rows[i];
     if (!row || row.length < 2) continue;
-    const date        = normalizeDate(row[cols.date] ?? "");
-    const description = String(row[cols.description] ?? "").trim();
-    const rawAmt      = String(row[cols.amount]      ?? "").trim();
-    const amount      = parseAmount(rawAmt);
-    const balance     = cols.balance !== -1 ? parseAmount(String(row[cols.balance] ?? "")) : null;
+    // Date: prefer transactionDate > bookingDate > date
+    const dateColIndex =
+      cols.transactionDate !== -1 ? cols.transactionDate :
+      cols.bookingDate     !== -1 ? cols.bookingDate :
+      cols.date;
+    const date = normalizeDate(row[dateColIndex] ?? "");
+
+    // Description: combine description + description2 if both present and different
+    const desc1 = cols.description  !== -1 ? String(row[cols.description]  ?? "").trim() : "";
+    const desc2 = cols.description2 !== -1 ? String(row[cols.description2] ?? "").trim() : "";
+    const description = (desc2 && desc2 !== desc1) ? `${desc1} ${desc2}`.trim() : desc1;
+
+    // Amount: use amount column, or derive from debit/credit
+    let rawAmt = "";
+    let amount = null;
+    if (cols.amount !== -1) {
+      rawAmt = String(row[cols.amount] ?? "").trim();
+      amount = parseAmount(rawAmt);
+    } else if (cols.debit !== -1 || cols.credit !== -1) {
+      const debitVal  = cols.debit  !== -1 ? parseAmount(String(row[cols.debit]  ?? "")) : null;
+      const creditVal = cols.credit !== -1 ? parseAmount(String(row[cols.credit] ?? "")) : null;
+      const debitNum  = (debitVal  != null && debitVal  !== 0) ? -Math.abs(debitVal)  : 0;
+      const creditNum = (creditVal != null && creditVal !== 0) ?  Math.abs(creditVal) : 0;
+      if (debitVal != null || creditVal != null) {
+        amount = debitNum + creditNum || null;
+      }
+      rawAmt = String(row[cols.debit !== -1 ? cols.debit : cols.credit] ?? "").trim();
+    }
+
+    const balance = cols.balance !== -1 ? parseAmount(String(row[cols.balance] ?? "")) : null;
    if (!date && !description) continue;
     if (!date || !/^\d{4}-\d{2}-\d{2}/.test(date)) continue;
  const merchant = normalizeMerchant(description);
