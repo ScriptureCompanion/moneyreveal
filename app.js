@@ -29,36 +29,6 @@ const CATEGORY_KEYWORDS = {
 
 };
 
-  "ica": "Food & Dining",
-  "coop": "Food & Dining",
-  "lidl": "Food & Dining",
-  "willys": "Food & Dining",
-
-  "mcdonald": "Food & Dining",
-  "burger king": "Food & Dining",
-  "max": "Food & Dining",
-
-  "shell": "Transport",
-  "circle k": "Transport",
-  "okq8": "Transport",
-
-  "uber": "Transport",
-  "bolt": "Transport",
-
-  "spotify": "Subscriptions",
-  "netflix": "Subscriptions",
-  "youtube": "Subscriptions",
-  "apple": "Subscriptions",
-  "google": "Subscriptions",
-
-  "amazon": "Shopping",
-  "zalando": "Shopping",
-  "ikea": "Shopping",
-
-  "hm": "Shopping",
-  "h&m": "Shopping"
-
-};
 fileInput.addEventListener("change", handleFileUpload);
 
 function handleFileUpload(event) {
