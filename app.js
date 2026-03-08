@@ -42,7 +42,6 @@ const MERCHANT_ALIASES = {
   "amazon": ["amazon"]
 };
 
-let filesImported = 0;
 let allTransactions = [];
 
 fileInput.addEventListener("change", handleFileUpload);
@@ -56,7 +55,7 @@ function handleFileUpload(event) {
   const files = event.target.files;
   if (!files || files.length === 0) return;
  
-  filesImported = 0;
+  const filesImported = files.length;
   results.textContent = `Reading ${files.length} file(s)...`;
 
   for (const file of files) {
@@ -90,8 +89,7 @@ function readExcelFile(file) {
           const rows = XLSX.utils.sheet_to_json(ws, { header: 1, defval: "" });
           allRows.push(...rows);
         });
-        filesImported++;
-        handleParsedRows(allRows, file.name, "excel");
+                handleParsedRows(allRows, file.name, "excel");
         return;
       } catch (directErr) {
         console.warn("SheetJS direct failed, trying JSZip repack:", directErr.message);
@@ -136,8 +134,7 @@ function readCsvFile(file) {
     try {
       const text = e.target.result;
       const rows = parseCsv(text);
-      filesImported++;
-      handleParsedRows(rows, file.name, "csv");
+            handleParsedRows(rows, file.name, "csv");
     } catch (error) {
       console.error(error);
       results.textContent = "Could not read CSV file.";
