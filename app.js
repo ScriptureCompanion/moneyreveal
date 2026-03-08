@@ -569,33 +569,6 @@ function normalizeMerchant(description) {
   return words[0];
 }
 
-  let text = description.toLowerCase();
-
-  // remove numbers
-  text = text.replace(/[0-9]/g,"");
-
-  // remove special characters
-  text = text.replace(/[^a-zåäö\s]/g,"");
-
-  // collapse spaces
-  text = text.replace(/\s+/g," ").trim();
-
-  for (const merchant in MERCHANT_ALIASES) {
-    for (const alias of MERCHANT_ALIASES[merchant]) {
-
-      if (text.includes(alias)) {
-        return merchant;
-      }
-
-    }
-  }
-
-  // fallback: first word of merchant
-  const firstWord = text.split(" ")[0];
-
-  return firstWord;
-}
-
 function detectCategory(description) {
   const text = description.toLowerCase();
 
