@@ -645,10 +645,13 @@ function parseAmount(value) {
 
   let cleaned = String(value).trim();
 
-  // Strip currency prefixes like "SEK"
+  // Strip currency prefix like "SEK", "EUR", "USD" (2-3 uppercase letters optionally followed by space)
   cleaned = cleaned.replace(/^[A-Z]{2,3}\s*/i, "");
 
-  // Handle trailing minus: "123,45-" → "-123,45"
+  // Strip any remaining leading/trailing whitespace after currency strip
+  cleaned = cleaned.trim();
+
+  // Handle trailing minus: "123,45-" → will be flagged and made negative at end
   const trailingMinus = cleaned.endsWith("-");
   if (trailingMinus) cleaned = cleaned.slice(0, -1);
 
@@ -656,20 +659,39 @@ function parseAmount(value) {
   const parenNeg = /^\(([^)]+)\)$/.exec(cleaned);
   if (parenNeg) cleaned = "-" + parenNeg[1];
 
-  // Remove whitespace
+  // Capture and strip leading minus so we can clean the numeric part safely
+  let leadingMinus = false;
+  if (cleaned.startsWith("-")) {
+    leadingMinus = true;
+    cleaned = cleaned.slice(1).trim();
+  }
+
+  // Remove all whitespace (space as thousands separator, e.g. "1 234,56")
   cleaned = cleaned.replace(/\s/g, "");
 
-  // Determine decimal separator
+  // Normalise thousand/decimal separators
   if (cleaned.includes(",") && cleaned.includes(".")) {
-    // e.g. "1.234,56" — dot is thousands, comma is decimal
-    cleaned = cleaned.replace(/\./g, "").replace(",", ".");
+    // Ambiguous: whichever comes last is the decimal separator
+    const lastComma = cleaned.lastIndexOf(",");
+    const lastDot   = cleaned.lastIndexOf(".");
+    if (lastComma > lastDot) {
+      // European: "1.234,56" — dot = thousands, comma = decimal
+      cleaned = cleaned.replace(/\./g, "").replace(",", ".");
+    } else {
+      // US: "1,234.56" — comma = thousands, dot = decimal
+      cleaned = cleaned.replace(/,/g, "");
+    }
   } else if (cleaned.includes(",")) {
+    // Only comma present — treat as decimal separator
     cleaned = cleaned.replace(",", ".");
   }
+  // If only dots present, leave as-is (standard float string)
 
   const num = Number(cleaned);
   if (Number.isNaN(num)) return null;
-  return trailingMinus ? -Math.abs(num) : num;
+
+  const signed = leadingMinus ? -Math.abs(num) : num;
+  return trailingMinus ? -Math.abs(signed) : signed;
 }
 
 function normalizeMerchant(description) {
