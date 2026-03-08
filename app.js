@@ -183,7 +183,7 @@ function handleParsedRows(rows, fileName, fileType) {
   .sort((a, b) => b[1] - a[1])
   .slice(0, 5);
 
-const subscriptions = detectSubscriptions(allTransactions);
+const { subscriptions, recurringMerchants } = detectSubscriptions(allTransactions);
     const monthlyEstimate = estimateMonthlySpending(allTransactions);
 
    console.log(subscriptions);
