@@ -32,6 +32,11 @@ let allTransactions = [];
 
 fileInput.addEventListener("change", handleFileUpload);
 
+document.getElementById("resetData").onclick = () => {
+  allTransactions = [];
+  results.innerHTML = "<p>Data cleared.</p>";
+};
+
 function handleFileUpload(event) {
   const files = event.target.files;
   if (!files || files.length === 0) return;
