@@ -262,7 +262,7 @@ const subscriptions = detectSubscriptions(allTransactions);
     html += `<table border="1" cellpadding="6" cellspacing="0" style="border-collapse:collapse;width:100%;font-size:13px;margin-top:16px;">
       <thead><tr style="background:#f5f5f5;"><th>Date</th><th>Description</th><th>Amount</th></tr></thead>
       <tbody>`;
-    mergedTransactions.forEach(row => {
+   allTransactions.forEach(row => {
       const color = row.amount < 0 ? "#c0392b" : "#27ae60";
       html += `<tr>
         <td>${row.date}</td>
