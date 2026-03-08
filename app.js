@@ -62,9 +62,9 @@ function handleFileUpload(event) {
     const fileName = file.name.toLowerCase();
 
     if (fileName.endsWith(".xlsx") || fileName.endsWith(".xls")) {
-      readExcelFile(file);
+      readExcelFile(file, filesImported);
     } else if (fileName.endsWith(".csv")) {
-      readCsvFile(file);
+      readCsvFile(file, filesImported);
     } else {
       totalFiles--;
       if (totalFiles === 0) results.textContent = "No supported files found.";
