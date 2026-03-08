@@ -89,7 +89,7 @@ function readExcelFile(file) {
           const rows = XLSX.utils.sheet_to_json(ws, { header: 1, defval: "" });
           allRows.push(...rows);
         });
-                handleParsedRows(allRows, file.name, "excel");
+                handleParsedRows(allRows, file.name, "excel", filesImported);
         return;
       } catch (directErr) {
         console.warn("SheetJS direct failed, trying JSZip repack:", directErr.message);
