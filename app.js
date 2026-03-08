@@ -758,6 +758,37 @@ function parseAmount(value) {
 }
 
 function stripBankNoise(text) {
+  const prefixes = [
+    "kortköp", "kortkop", "köp", "kop", "card purchase", "purchase",
+    "autogiro", "autogiro betalning",
+    "swish betalning", "swish",
+    "bg", "pg", "bankgiro", "plusgiro",
+    "betalning", "transaktion", "överföring", "overföring",
+    "insättning", "insattning", "uttag",
+    "paypal", "internet", "övf", "ovf"
+  ];
+
+  let t = text;
+
+  let changed = true;
+  while (changed) {
+    changed = false;
+    for (const p of prefixes) {
+      const re = new RegExp("^" + p.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "\\s*", "");
+      const next = t.replace(re, "");
+      if (next !== t) { t = next.trim(); changed = true; }
+    }
+  }
+
+  t = t.replace(/\b\d{6}\b/g, "");
+  t = t.replace(/\b\d{8}\b/g, "");
+  t = t.replace(/\b\d{4}-\d{2}-\d{2}\b/g, "");
+  t = t.replace(/\b[\d*-]{5,}\b/g, "");
+  t = t.replace(/\b(ab|as|oy|ltd|gmbh|inc|llc|kb|hb)\b/g, "");
+  t = t.replace(/\s+/g, " ").trim();
+
+  return t;
+}
   // ... (the new function)
 }
 
