@@ -28,6 +28,21 @@ const CATEGORY_KEYWORDS = {
   ]
 
 };
+const MERCHANT_ALIASES = {
+  "ica": ["ica", "ica nara", "ica supermarket"],
+  "coop": ["coop", "coop konsum"],
+  "willys": ["willys"],
+  "lidl": ["lidl"],
+  "shell": ["shell"],
+  "circle k": ["circle k", "circlek"],
+  "spotify": ["spotify"],
+  "netflix": ["netflix"],
+  "apple": ["apple", "itunes", "apple.com"],
+  "google": ["google"],
+  "amazon": ["amazon"]
+};
+
+let filesImported = 0;
 let allTransactions = [];
 
 fileInput.addEventListener("change", handleFileUpload);
