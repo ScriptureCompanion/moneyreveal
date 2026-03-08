@@ -164,7 +164,25 @@ function handleParsedRows(rows, fileName, fileType) {
   allTransactions = Array.from(uniqueMap.values());
   allTransactions.sort((a, b) => new Date(b.date) - new Date(a.date));
 
-  let html = `<p><strong>Total Transactions Loaded:</strong> ${allTransactions.length}</p>`;
+  const allDates = allTransactions.map(t => new Date(t.date)).filter(d=>!isNaN(d));
+const minDate = allDates.length ? new Date(Math.min(...allDates)).toISOString().slice(0,10) : "—";
+const maxDate = allDates.length ? new Date(Math.max(...allDates)).toISOString().slice(0,10) : "—";
+
+let html = `
+<div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px;">
+  <div style="flex:1;min-width:160px;padding:12px 16px;background:#f0f4ff;border-left:4px solid #4a6cf7;border-radius:6px;">
+    <div style="font-size:11px;text-transform:uppercase;color:#888;margin-bottom:4px;">Analysis Period</div>
+    <div style="font-size:15px;font-weight:600;">${minDate} → ${maxDate}</div>
+  </div>
+  <div style="flex:1;min-width:160px;padding:12px 16px;background:#f0f4ff;border-left:4px solid #4a6cf7;border-radius:6px;">
+    <div style="font-size:11px;text-transform:uppercase;color:#888;margin-bottom:4px;">Files Imported</div>
+    <div style="font-size:15px;font-weight:600;">${fileInput.files.length}</div>
+  </div>
+  <div style="flex:1;min-width:160px;padding:12px 16px;background:#f0f4ff;border-left:4px solid #4a6cf7;border-radius:6px;">
+    <div style="font-size:11px;text-transform:uppercase;color:#888;margin-bottom:4px;">Total Transactions</div>
+    <div style="font-size:15px;font-weight:600;">${allTransactions.length}</div>
+  </div>
+</div>`;
 
   if (allTransactions.length > 0) {
     const expenses   = allTransactions.filter(r => r.amount < 0);
