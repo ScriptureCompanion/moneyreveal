@@ -43,6 +43,7 @@ const MERCHANT_ALIASES = {
 };
 
 let allTransactions = [];
+let filesImported = 0;
 
 fileInput.addEventListener("change", handleFileUpload);
 
@@ -178,6 +179,7 @@ function handleParsedRows(rows, fileName, fileType, filesImported) {
   });
   allTransactions = Array.from(uniqueMap.values());
   allTransactions.sort((a, b) => new Date(b.date) - new Date(a.date));
+  filesImported++;
 
   const allDates = allTransactions.map(t => new Date(t.date)).filter(d=>!isNaN(d));
 const minDate = allDates.length ? new Date(Math.min(...allDates)).toISOString().slice(0,10) : "—";
