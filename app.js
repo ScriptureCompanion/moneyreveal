@@ -164,7 +164,11 @@ function handleParsedRows(rows, fileName, fileType) {
       const key = r.description.toLowerCase().trim();
       descCount[key] = (descCount[key] || 0) + 1;
     });
-    const recurring = Object.entries(descCount)
+    const recurring =
+      const subscriptions = detectSubscriptions(normalizedRows);
+      
+            
+      Object.entries(descCount)
       .filter(([, n]) => n >= 2)
       .sort((a, b) => b[1] - a[1])
       .slice(0, 5);
