@@ -151,21 +151,36 @@ function handleParsedRows(rows, fileName, fileType) {
   }
 
   const previewRows = rows.slice(0, 8);
-  const normalizedRows = normalizeRows(rows);
-
+ const normalizedRows = normalizeRows(rows);
   console.log("Normalized rows:", normalizedRows);
 
- let html = `<p><strong>File:</strong> ${fileName} &nbsp; <strong>Transactions:</strong> ${normalizedRows.length}</p>`;
+  allTransactions = allTransactions.concat(normalizedRows);
+  filesProcessed++;
 
- if (normalizedRows.length > 0) {
-    // --- Financial insights ---
-    const expenses   = normalizedRows.filter(r => r.amount < 0);
-    const income     = normalizedRows.filter(r => r.amount > 0);
+  if (filesProcessed < totalFiles) return;
+
+  // All files loaded — deduplicate
+  const uniqueMap = new Map();
+  allTransactions.forEach(t => {
+    const key = t.date + t.description + t.amount;
+    uniqueMap.set(key, t);
+  });
+  const mergedTransactions = Array.from(uniqueMap.values());
+  mergedTransactions.sort((a, b) => b.date.localeCompare(a.date));
+
+  // Reset globals
+  allTransactions = [];
+  filesProcessed = 0;
+
+  let html = `<p><strong>Files imported:</strong> ${totalFiles} &nbsp; <strong>Transactions:</strong> ${mergedTransactions.length}</p>`;
+
+  if (mergedTransactions.length > 0) {
+    const expenses   = mergedTransactions.filter(r => r.amount < 0);
+    const income     = mergedTransactions.filter(r => r.amount > 0);
     const totalSpent = expenses.reduce((s, r) => s + r.amount, 0);
     const totalIn    = income.reduce((s, r) => s + r.amount, 0);
     const net        = totalIn + totalSpent;
 
-    // Recurring: descriptions appearing 2+ times among expenses
     const descCount = {};
     expenses.forEach(r => {
       const key = r.description.toLowerCase().trim();
