@@ -527,8 +527,8 @@ function normalizeRows(rows) {
     const rawAmt      = String(row[cols.amount]      ?? "").trim();
     const amount      = parseAmount(rawAmt);
     const balance     = cols.balance !== -1 ? parseAmount(String(row[cols.balance] ?? "")) : null;
-    if (!date && !description) continue;
-    if (!/^\d{4}-\d{2}-\d{2}/.test(date)) continue;
+   if (!date && !description) continue;
+    if (!date || !/^\d{4}-\d{2}-\d{2}/.test(date)) continue;
  const merchant = normalizeMerchant(description);
 
 transactions.push({
