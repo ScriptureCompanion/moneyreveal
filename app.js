@@ -241,6 +241,27 @@ const { subscriptions, recurringMerchants } = detectSubscriptions(allTransaction
       </div>
     </div>`;
 
+// Categorization coverage
+    const categorized = allTransactions.filter(t => t.category !== "Other").length;
+    const covPct = allTransactions.length ? Math.round((categorized/allTransactions.length)*100) : 0;
+    html += `
+    <div style="margin:16px 0;padding:12px 16px;background:#f9f9f9;border-left:4px solid #aaa;border-radius:6px;">
+      <div style="font-size:11px;text-transform:uppercase;color:#888;margin-bottom:4px;">Categorization Coverage</div>
+      <div style="font-size:15px;font-weight:600;">${covPct}% categorized &nbsp; <span style="color:#888;font-weight:400;">${100-covPct}% uncategorized</span></div>
+    </div>`;
+
+    // Auto insight: largest category
+    if(topCats.length > 0){
+      const grandForInsight = topCats.reduce((s,[,v])=>s+v,0)||1;
+      const [topCatName, topCatVal] = topCats[0];
+      const topCatPct = Math.round((topCatVal/grandForInsight)*100);
+      html += `
+      <div style="margin:16px 0;padding:12px 16px;background:#fff8e1;border-left:4px solid #f0b429;border-radius:6px;">
+        <div style="font-size:11px;text-transform:uppercase;color:#888;margin-bottom:4px;">Insight</div>
+        <div style="font-size:14px;">${topCatName} is your largest expense category (${topCatPct}% of spending).</div>
+      </div>`;
+    }
+    
     if (topCats.length > 0) {
       const grandTotal = topCats.reduce((s, [, v]) => s + v, 0) || 1;
       html += `<div style="margin:16px 0;"><strong>Spending by Category</strong><div style="margin-top:8px;">`;
