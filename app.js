@@ -360,7 +360,7 @@ function normalizeMerchant(description){
 }
 
 function detectCategory(description){
-  const text = description.toLowerCase();
+ const text = normalizeMerchant(description);
 
   for(const merchant in MERCHANT_CATEGORIES){
 
