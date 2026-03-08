@@ -420,38 +420,44 @@ function detectSubscriptions(transactions){
   const groups = {};
 
   transactions.forEach(t => {
-
     if(t.amount >= 0) return;
-
     const key = t.merchant;
-
     if(!groups[key]) groups[key] = [];
-
     groups[key].push(t);
-
   });
 
   const subscriptions = [];
+  const recurringMerchants = [];
 
   for(const merchant in groups){
-
-    const list = groups[merchant];
-
+    const list = groups[merchant].sort((a,b)=>new Date(a.date)-new Date(b.date));
     if(list.length < 2) continue;
 
-    const avgAmount =
-      list.reduce((s,t)=>s+Math.abs(t.amount),0)/list.length;
+    const amounts = list.map(t => Math.abs(t.amount));
+    const avg = amounts.reduce((a,b)=>a+b,0)/amounts.length;
+    const variance = Math.max(...amounts) - Math.min(...amounts);
 
-    subscriptions.push({
-      merchant,
-      count:list.length,
-      avgAmount:avgAmount.toFixed(2)
-    });
+    // Calculate average interval between payments in days
+    let avgInterval = 0;
+    if(list.length >= 2){
+      const intervals = [];
+      for(let i=1;i<list.length;i++){
+        const diff = (new Date(list[i].date) - new Date(list[i-1].date))/(1000*60*60*24);
+        intervals.push(diff);
+      }
+      avgInterval = intervals.reduce((a,b)=>a+b,0)/intervals.length;
+    }
 
+    const isSubscription = list.length >= 3 && (variance/avg) < 0.05 && avgInterval >= 20 && avgInterval <= 40;
+
+    if(isSubscription){
+      subscriptions.push({ merchant, count: list.length, avgAmount: avg.toFixed(2), type: "subscription" });
+    } else if(list.length >= 2){
+      recurringMerchants.push({ merchant, count: list.length, avgAmount: avg.toFixed(2), type: "recurring" });
+    }
   }
 
-  return subscriptions;
-
+  return { subscriptions, recurringMerchants };
 }
 
 function estimateMonthlySpending(transactions) {
