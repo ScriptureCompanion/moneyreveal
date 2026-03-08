@@ -127,7 +127,7 @@ function readExcelFile(file, filesImported) {
   reader.readAsArrayBuffer(file);
 }
 
-function readCsvFile(file) {
+function readCsvFile(file, filesImported) {
   const reader = new FileReader();
 
   reader.onload = function (e) {
