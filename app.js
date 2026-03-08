@@ -195,7 +195,7 @@ let html = `
   </div>
   <div style="flex:1;min-width:160px;padding:12px 16px;background:#f0f4ff;border-left:4px solid #4a6cf7;border-radius:6px;">
     <div style="font-size:11px;text-transform:uppercase;color:#888;margin-bottom:4px;">Files Imported</div>
-    <div style="font-size:15px;font-weight:600;">${fileInput.files.length}</div>
+    <div style="font-size:15px;font-weight:600;">${filesImported}</div>
   </div>
   <div style="flex:1;min-width:160px;padding:12px 16px;background:#f0f4ff;border-left:4px solid #4a6cf7;border-radius:6px;">
     <div style="font-size:11px;text-transform:uppercase;color:#888;margin-bottom:4px;">Total Transactions</div>
