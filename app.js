@@ -118,6 +118,7 @@ function readExcelFile(file) {
       console.log("First 3 rows:", allRows.slice(0, 3));
       console.log("Row at index 9:", allRows[9]);
       console.log("Row at index 10:", allRows[10]);
+      filesImported++;
       handleParsedRows(allRows, file.name, "excel-repacked");
 
     } catch (err) {
