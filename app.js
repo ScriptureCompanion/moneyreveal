@@ -789,8 +789,6 @@ function stripBankNoise(text) {
 
   return t;
 }
-  // ... (the new function)
-}
 
 function normalizeMerchant(description) {
 
