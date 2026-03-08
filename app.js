@@ -90,6 +90,7 @@ function readExcelFile(file) {
           const rows = XLSX.utils.sheet_to_json(ws, { header: 1, defval: "" });
           allRows.push(...rows);
         });
+        filesImported++;
         handleParsedRows(allRows, file.name, "excel");
         return;
       } catch (directErr) {
