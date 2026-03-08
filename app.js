@@ -169,10 +169,14 @@ const mergedTransactions = Array.from(uniqueMap.values());
   mergedTransactions.sort((a, b) => b.date.localeCompare(a.date));
 
   // Reset globals
+ const importedCount = totalFiles;
+  const transactionCount = mergedTransactions.length;
+
   allTransactions = [];
   filesProcessed = 0;
+  totalFiles = 0;
 
-  let html = `<p><strong>Files imported:</strong> ${totalFiles} &nbsp; <strong>Transactions:</strong> ${mergedTransactions.length}</p>`;
+  let html = `<p><strong>Files imported:</strong> ${importedCount} &nbsp; <strong>Transactions:</strong> ${transactionCount}</p>`;
 
   if (mergedTransactions.length > 0) {
     const expenses   = mergedTransactions.filter(r => r.amount < 0);
