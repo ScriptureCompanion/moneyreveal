@@ -149,32 +149,21 @@ function handleParsedRows(rows, fileName, fileType) {
   console.log("Normalized rows:", normalizedRows);
 
   allTransactions = allTransactions.concat(normalizedRows);
-  filesProcessed++;
 
-  if (filesProcessed < totalFiles) return;
+  // Deduplicate
+  const uniqueMap = new Map();
+  allTransactions.forEach(t => {
+    const key = t.date + t.description + t.amount;
+    uniqueMap.set(key, t);
+  });
+  allTransactions = Array.from(uniqueMap.values());
+  allTransactions.sort((a, b) => new Date(b.date) - new Date(a.date));
 
-  // All files loaded — deduplicate
- const uniqueMap = new Map();
-allTransactions.forEach(t => {
-  const key = t.date + t.description + t.amount;
-  uniqueMap.set(key, t);
-});
-const mergedTransactions = Array.from(uniqueMap.values());
-  mergedTransactions.sort((a, b) => b.date.localeCompare(a.date));
+  let html = `<p><strong>Total Transactions Loaded:</strong> ${allTransactions.length}</p>`;
 
-  // Reset globals
- const importedCount = totalFiles;
-  const transactionCount = mergedTransactions.length;
-
-  allTransactions = [];
-  filesProcessed = 0;
-  totalFiles = 0;
-
- let html = `<p><strong>Files imported:</strong> ${importedCount} &nbsp; <strong>Transactions:</strong> ${transactionCount}</p>`;
-
-  if (transactionCount > 0) {
-    const expenses   = mergedTransactions.filter(r => r.amount < 0);
-    const income     = mergedTransactions.filter(r => r.amount > 0);
+  if (allTransactions.length > 0) {
+    const expenses   = allTransactions.filter(r => r.amount < 0);
+    const income     = allTransactions.filter(r => r.amount > 0);
     const totalSpent = expenses.reduce((s, r) => s + r.amount, 0);
     const totalIn    = income.reduce((s, r) => s + r.amount, 0);
     const net        = totalIn + totalSpent;
