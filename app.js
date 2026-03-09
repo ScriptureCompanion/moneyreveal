@@ -387,9 +387,18 @@ const MERCHANT_CATEGORY_MAP = {
   "destination go": "Travel",
   "skattekonto": "Transfers & Internal",
   "harry carlsson": "Shopping & Equipment",
-  "avanza bank": "Investment"
+  "avanza bank": "Investment",
 
-};
+  // --- Additional mappings ---
+  "lf gotland": "Banking & Fees",
+  "booking com": "Travel",
+  "formvisborg": "Health",
+  "intersport vi": "Shopping & Equipment",
+  "mq marqet visb": "Shopping & Equipment",
+  "hebe fiber": "Telecom & Internet",
+  "scandinavian a": "Travel"
+
+};;
 
 function getBestSheet(workbook) {
   let bestRows = [];
