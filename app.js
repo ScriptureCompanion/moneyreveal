@@ -590,6 +590,9 @@ function parseCsv(text) {
 function handleParsedRows(rows, fileName, fileType) {
   console.log("Raw rows:", rows);
 
+  if (handleParsedRows.__skipAdd) {
+    // Rerender path: skip parsing, just rebuild HTML from allTransactions
+  } else {
   if (!rows || rows.length === 0) {
     results.textContent = "No rows found in file.";
     return;
@@ -612,6 +615,7 @@ function handleParsedRows(rows, fileName, fileType) {
   });
   allTransactions = Array.from(uniqueMap.values());
   allTransactions.sort((a, b) => new Date(b.date) - new Date(a.date));
+  } // end !__skipAdd
   
   const allDates = allTransactions.map(t => new Date(t.date)).filter(d=>!isNaN(d));
 const minDate = allDates.length ? new Date(Math.min(...allDates)).toISOString().slice(0,10) : "—";
@@ -699,10 +703,13 @@ const { subscriptions, recurringMerchants } = detectSubscriptions(allTransaction
       <div style="font-size:15px;font-weight:600;">${covPct}% categorized &nbsp; <span style="color:#888;font-weight:400;">${100-covPct}% uncategorized</span></div>
     </div>`;
 
-    // Auto insight: largest category
-    if(topCats.length > 0){
-      const grandForInsight = topCats.reduce((s,[,v])=>s+v,0)||1;
-      const [topCatName, topCatVal] = topCats[0];
+    // Auto insight: largest category (exclude Personal Transfers)
+    const topCatsForInsight = Object.entries(catTotals)
+      .filter(([cat]) => cat !== "Personal Transfers")
+      .sort((a, b) => b[1] - a[1]);
+    if(topCatsForInsight.length > 0){
+      const grandForInsight = topCatsForInsight.reduce((s,[,v])=>s+v,0)||1;
+      const [topCatName, topCatVal] = topCatsForInsight[0];
       const topCatPct = Math.round((topCatVal/grandForInsight)*100);
       html += `
       <div style="margin:16px 0;padding:12px 16px;background:#fff8e1;border-left:4px solid #f0b429;border-radius:6px;">
@@ -785,23 +792,52 @@ const { subscriptions, recurringMerchants } = detectSubscriptions(allTransaction
       html += `</div></div>`;
     }
 
+    const ALL_CATEGORY_OPTIONS = Object.keys(CATEGORY_KEYWORDS).concat(
+      ["Other"].filter(c => !Object.keys(CATEGORY_KEYWORDS).includes(c))
+    );
+
     html += `<table border="1" cellpadding="6" cellspacing="0" style="border-collapse:collapse;width:100%;font-size:13px;margin-top:16px;">
-      <thead><tr style="background:#f5f5f5;"><th>Date</th><th>Description</th><th>Amount</th></tr></thead>
+      <thead><tr style="background:#f5f5f5;"><th>Date</th><th>Description</th><th>Amount</th><th>Category</th></tr></thead>
       <tbody>`;
-   allTransactions.forEach(row => {
+   allTransactions.forEach((row, idx) => {
       const color = row.amount < 0 ? "#c0392b" : "#27ae60";
-      html += `<tr>
+      let rowBg = "";
+      if (row.category === "Other") rowBg = 'background:#fff3cd;';
+      else if (row.category === "Personal Transfers") rowBg = 'background:#eef2ff;';
+      const opts = ALL_CATEGORY_OPTIONS.map(c =>
+        `<option value="${c}"${c === row.category ? " selected" : ""}>${c}</option>`
+      ).join("");
+      html += `<tr style="${rowBg}">
         <td>${row.date}</td>
         <td>${row.description}</td>
         <td style="color:${color};text-align:right;">${fmt(row.amount)}</td>
+        <td><select data-merchant="${row.merchant}" style="font-size:12px;padding:2px;">${opts}</select></td>
       </tr>`;
     });
     html += `</tbody></table>`;
   } else {
-    html += `<p>No transactions parsed. Raw preview:</p><pre>${previewRows.map(r => JSON.stringify(r)).join("\n")}</pre>`;
+    html += `<p>No transactions parsed. Raw preview:</p><pre>${(typeof previewRows !== "undefined" ? previewRows : []).map(r => JSON.stringify(r)).join("\n")}</pre>`;
   }
 
   results.innerHTML = html;
+
+  results.querySelectorAll("select[data-merchant]").forEach(sel => {
+    sel.addEventListener("change", function() {
+      const merchant = this.getAttribute("data-merchant");
+      const category = this.value;
+      setMerchantCategoryOverride(merchant, category);
+      allTransactions.forEach(t => { if (t.merchant === merchant) t.category = category; });
+      handleParsedRows.__rerender();
+    });
+  });
+
+  handleParsedRows.__rerender = function() {
+    // Re-invoke rendering by re-calling with current allTransactions already populated
+    // We call handleParsedRows with empty rows to skip re-parsing; guard with flag
+    handleParsedRows.__skipAdd = true;
+    handleParsedRows([], "__rerender__", "rerender");
+    handleParsedRows.__skipAdd = false;
+  };
 }
 
 // --- Column alias map: maps bank-specific header names to normalized keys ---
@@ -996,7 +1032,7 @@ transactions.push({
   amount,
   balance,
   rawAmount: rawAmt,
-  category: detectCategory(merchant)
+  category: getMerchantCategoryOverride(merchant) || detectCategory(merchant)
 });
   }
 
@@ -1174,6 +1210,13 @@ function detectCategory(merchant) {
   }
 
   return "Other";
+}
+
+function getMerchantCategoryOverride(merchant) {
+  try { return localStorage.getItem("cat_override:" + merchant) || null; } catch(e) { return null; }
+}
+function setMerchantCategoryOverride(merchant, category) {
+  try { localStorage.setItem("cat_override:" + merchant, category); } catch(e) {}
 }
 
 function looksLikePersonName(text) {
