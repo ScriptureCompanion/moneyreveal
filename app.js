@@ -138,8 +138,14 @@ const CATEGORY_KEYWORDS = {
     "avanza","investment"
   ],
 
+"Entertainment": [
+    "tickster","ticketmaster","ticket","event"
+  ],
+
   "Personal Transfers": [
-    "överf mobil","overf mobil",
+    "överf mobil","överföring mobil","overforing mobil",
+    "overf mobil",
+    "överf internet","overf internet",
     "stående överf","staende overf",
     "stående","staende"
   ]
@@ -402,7 +408,14 @@ const MERCHANT_CATEGORY_MAP = {
   "intersport vi": "Shopping & Equipment",
   "mq marqet visb": "Shopping & Equipment",
   "hebe fiber": "Telecom & Internet",
-  "scandinavian a": "Travel"
+"scandinavian a": "Travel",
+
+  // --- New mappings ---
+  "oob visby": "Shopping & Equipment",
+  "tickster": "Entertainment",
+  "ticketmaster s": "Entertainment",
+  "wavespeedai": "Software & SaaS",
+  "zettle": "Banking & Fees"
 
 };;
 
