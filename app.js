@@ -132,6 +132,10 @@ const CATEGORY_KEYWORDS = {
     "överföring","överf","överf mobil","stående överf","autogiro",
     "bg ","pg ","bankgiro","plusgiro","intern","interntransfer",
     "sparande","flytt","swish"
+  ],
+
+  "Investment": [
+    "avanza","investment"
   ]
 
 };
@@ -370,7 +374,20 @@ const MERCHANT_CATEGORY_MAP = {
   "skatteverket": "Taxes",
   "hmrc": "Taxes",
   "irs": "Taxes",
-  "finanzamt": "Taxes"
+  "finanzamt": "Taxes",
+
+  // --- Added mappings ---
+  "stadshypotek": "Loans & Credit",
+  "geab": "Utilities",
+  "transportstyre": "Transport",
+  "transportst": "Transport",
+  "transportstyrelsen": "Transport",
+  "region gotland": "Health",
+  "qliro": "Loans & Credit",
+  "destination go": "Travel",
+  "skattekonto": "Transfers & Internal",
+  "harry carlsson": "Shopping & Equipment",
+  "avanza bank": "Investment"
 
 };
 
