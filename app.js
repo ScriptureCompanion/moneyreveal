@@ -136,6 +136,12 @@ const CATEGORY_KEYWORDS = {
 
   "Investment": [
     "avanza","investment"
+  ],
+
+  "Personal Transfers": [
+    "överf mobil","overf mobil",
+    "stående överf","staende overf",
+    "stående","staende"
   ]
 
 };
@@ -1133,7 +1139,33 @@ function detectCategory(merchant) {
     }
   }
 
+  if (looksLikePersonName(text)) {
+    return "Personal Transfers";
+  }
+
   return "Other";
+}
+
+function looksLikePersonName(text) {
+  const words = text.trim().split(/\s+/);
+  if (words.length < 2 || words.length > 3) return false;
+  for (const w of words) {
+    if (!/^[a-zåäö]+$/.test(w)) return false;
+    if (w.length < 2) return false;
+  }
+  const businessPatterns = [
+    "ab","as","kb","hb","ltd","inc","llc","gmbh","oy",
+    "bank","banken","skatt","hypotek","trafik","styrelsen",
+    "bolaget","handel","service","center","gruppen","media",
+    "förening","stiftelse","region","stad","kommun","myndighet",
+    "apotek","försäkring","finans","kredit","invest","fond",
+    "transport","logistik","teknik","system","digital","online",
+    "shop","store","market","butik","go","destination","booking"
+  ];
+  for (const w of words) {
+    if (businessPatterns.includes(w)) return false;
+  }
+  return true;
 }
 
 function validateBalanceSequence(transactions) {
