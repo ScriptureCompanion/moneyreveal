@@ -198,6 +198,182 @@ const MERCHANT_ALIASES = {
 
 };
 
+const MERCHANT_CATEGORY_MAP = {
+
+  // --- Grocery / Supermarkets ---
+  "ica": "Food & Dining",
+  "coop": "Food & Dining",
+  "willys": "Food & Dining",
+  "lidl": "Food & Dining",
+  "hemköp": "Food & Dining",
+  "tesco": "Food & Dining",
+  "aldi": "Food & Dining",
+  "carrefour": "Food & Dining",
+  "rewe": "Food & Dining",
+  "spar": "Food & Dining",
+  "whole foods": "Food & Dining",
+  "kroger": "Food & Dining",
+  "costco": "Food & Dining",
+  "walmart": "Food & Dining",
+  "target": "Food & Dining",
+
+  // --- Restaurants / fast food ---
+  "mcdonald": "Food & Dining",
+  "burger king": "Food & Dining",
+  "subway": "Food & Dining",
+  "starbucks": "Food & Dining",
+  "dominos": "Food & Dining",
+  "pizza hut": "Food & Dining",
+  "kfc": "Food & Dining",
+  "taco bell": "Food & Dining",
+  "espresso house": "Food & Dining",
+  "max": "Food & Dining",
+
+  // --- Food delivery ---
+  "uber eats": "Food & Dining",
+  "doordash": "Food & Dining",
+  "foodora": "Food & Dining",
+  "wolt": "Food & Dining",
+  "deliveroo": "Food & Dining",
+  "just eat": "Food & Dining",
+
+  // --- Transport ---
+  "uber": "Transport",
+  "bolt": "Transport",
+  "lyft": "Transport",
+  "shell": "Transport",
+  "circle k": "Transport",
+  "okq8": "Transport",
+  "preem": "Transport",
+  "bp": "Transport",
+  "esso": "Transport",
+  "chevron": "Transport",
+  "exxon": "Transport",
+
+  // --- Public transport ---
+  "sl": "Transport",
+  "sj": "Transport",
+  "vasttrafik": "Transport",
+  "skånetrafiken": "Transport",
+  "amtrak": "Transport",
+  "db": "Transport",
+  "sncf": "Transport",
+  "trenitalia": "Transport",
+
+  // --- Airlines ---
+  "sas": "Travel",
+  "ryanair": "Travel",
+  "norwegian": "Travel",
+  "lufthansa": "Travel",
+  "british airways": "Travel",
+  "klm": "Travel",
+  "delta": "Travel",
+  "united": "Travel",
+  "american airlines": "Travel",
+
+  // --- Hotels ---
+  "booking": "Travel",
+  "booking.com": "Travel",
+  "airbnb": "Travel",
+  "expedia": "Travel",
+  "hotels.com": "Travel",
+  "marriott": "Travel",
+  "hilton": "Travel",
+  "hyatt": "Travel",
+
+  // --- Streaming ---
+  "spotify": "Software & SaaS",
+  "netflix": "Software & SaaS",
+  "youtube": "Software & SaaS",
+  "disney": "Software & SaaS",
+  "hbo": "Software & SaaS",
+  "prime video": "Software & SaaS",
+  "apple tv": "Software & SaaS",
+
+  // --- Big tech ---
+  "apple": "Software & SaaS",
+  "google": "Software & SaaS",
+  "microsoft": "Software & SaaS",
+  "amazon web services": "Software & SaaS",
+  "aws": "Software & SaaS",
+
+  // --- SaaS / dev tools ---
+  "github": "Software & SaaS",
+  "gitlab": "Software & SaaS",
+  "figma": "Software & SaaS",
+  "notion": "Software & SaaS",
+  "slack": "Software & SaaS",
+  "zoom": "Software & SaaS",
+  "dropbox": "Software & SaaS",
+  "adobe": "Software & SaaS",
+  "openai": "Software & SaaS",
+  "chatgpt": "Software & SaaS",
+  "anthropic": "Software & SaaS",
+  "canva": "Software & SaaS",
+  "atlassian": "Software & SaaS",
+  "jira": "Software & SaaS",
+
+  // --- Ecommerce ---
+  "amazon": "Shopping & Equipment",
+  "zalando": "Shopping & Equipment",
+  "ikea": "Shopping & Equipment",
+  "hm": "Shopping & Equipment",
+  "h&m": "Shopping & Equipment",
+  "etsy": "Shopping & Equipment",
+  "ebay": "Shopping & Equipment",
+  "shopify": "Shopping & Equipment",
+
+  // --- Electronics ---
+  "elgiganten": "Shopping & Equipment",
+  "media markt": "Shopping & Equipment",
+  "best buy": "Shopping & Equipment",
+  "netonnet": "Shopping & Equipment",
+  "webhallen": "Shopping & Equipment",
+  "micro center": "Shopping & Equipment",
+  "apple store": "Shopping & Equipment",
+
+  // --- Logistics ---
+  "postnord": "Shipping & Postage",
+  "dhl": "Shipping & Postage",
+  "ups": "Shipping & Postage",
+  "fedex": "Shipping & Postage",
+  "schenker": "Shipping & Postage",
+  "bring": "Shipping & Postage",
+  "gls": "Shipping & Postage",
+
+  // --- Telecom ---
+  "telia": "Telecom & Internet",
+  "tele2": "Telecom & Internet",
+  "telenor": "Telecom & Internet",
+  "vodafone": "Telecom & Internet",
+  "verizon": "Telecom & Internet",
+  "att": "Telecom & Internet",
+  "tmobile": "Telecom & Internet",
+
+  // --- Payment platforms ---
+  "paypal": "Banking & Fees",
+  "stripe": "Banking & Fees",
+  "square": "Banking & Fees",
+  "klarna": "Loans & Credit",
+  "swish": "Transfers & Internal",
+  "venmo": "Transfers & Internal",
+  "cash app": "Transfers & Internal",
+
+  // --- Accounting ---
+  "fortnox": "Accounting & Admin",
+  "visma": "Accounting & Admin",
+  "quickbooks": "Accounting & Admin",
+  "xero": "Accounting & Admin",
+  "bokio": "Accounting & Admin",
+
+  // --- Government ---
+  "skatteverket": "Taxes",
+  "hmrc": "Taxes",
+  "irs": "Taxes",
+  "finanzamt": "Taxes"
+
+};
+
 function getBestSheet(workbook) {
   let bestRows = [];
   for (const name of workbook.SheetNames) {
@@ -897,19 +1073,21 @@ function normalizeMerchant(description) {
   return phrase || "unknown";
 }
 
-function detectCategory(description) {
-  const text = description.toLowerCase();
+function detectCategory(merchant) {
+  const text = merchant.toLowerCase();
 
-  for(const [category, keywords] of Object.entries(CATEGORY_KEYWORDS)){
+  // Check merchant-to-category index first (fast, exact match)
+  if (MERCHANT_CATEGORY_MAP[text]) {
+    return MERCHANT_CATEGORY_MAP[text];
+  }
 
-    for(const keyword of keywords){
-
-      if(text.includes(keyword)){
+  // Fall back to keyword scanning over CATEGORY_KEYWORDS
+  for (const [category, keywords] of Object.entries(CATEGORY_KEYWORDS)) {
+    for (const keyword of keywords) {
+      if (text.includes(keyword)) {
         return category;
       }
-
     }
-
   }
 
   return "Other";
