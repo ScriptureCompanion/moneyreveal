@@ -656,7 +656,7 @@ const { subscriptions, recurringMerchants } = detectSubscriptions(allTransaction
       html += `
       <div style="margin:16px 0;padding:12px 16px;background:#fff8e1;border-left:4px solid #f0b429;border-radius:6px;">
         <div style="font-size:11px;text-transform:uppercase;color:#888;margin-bottom:4px;">Insight</div>
-        <div style="font-size:14px;">${topCatName} is your largest expense category (${topCatPct}% of spending).</div>
+        <div style="font-size:14px;">${topCatName === "Other" ? "A large share of your spending is still uncategorized. Add more merchant mappings to improve analysis." : `${topCatName} is your largest expense category (${topCatPct}% of spending).`}</div>
       </div>`;
     }
     
@@ -701,6 +701,12 @@ const { subscriptions, recurringMerchants } = detectSubscriptions(allTransaction
     }
 
 // Top Merchants
+    const uncatMerchants = {};
+    expenses.filter(t => t.category === "Other" && t.merchant && t.merchant !== "unknown").forEach(t => {
+      uncatMerchants[t.merchant] = (uncatMerchants[t.merchant] || 0) + Math.abs(t.amount);
+    });
+    const topUncat = Object.entries(uncatMerchants).sort((a, b) => b[1] - a[1]).slice(0, 15);
+
     const merchantTotals = {};
     expenses.forEach(t => {
       merchantTotals[t.merchant] = (merchantTotals[t.merchant]||0) + Math.abs(t.amount);
@@ -717,6 +723,17 @@ const { subscriptions, recurringMerchants } = detectSubscriptions(allTransaction
       html += `</div></div>`;
     }
     
+    if (topUncat.length > 0) {
+      html += `<div style="margin:16px 0;"><strong>Top Uncategorized Merchants</strong><div style="margin-top:8px;">`;
+      topUncat.forEach(([merchant, total]) => {
+        html += `<div style="margin-bottom:4px;font-size:13px;">
+          <span style="display:inline-block;width:180px;text-transform:capitalize;">${merchant}</span>
+          <span style="color:#888;">${fmt(total)} kr</span>
+        </div>`;
+      });
+      html += `</div></div>`;
+    }
+
     html += `<table border="1" cellpadding="6" cellspacing="0" style="border-collapse:collapse;width:100%;font-size:13px;margin-top:16px;">
       <thead><tr style="background:#f5f5f5;"><th>Date</th><th>Description</th><th>Amount</th></tr></thead>
       <tbody>`;
