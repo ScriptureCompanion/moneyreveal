@@ -665,7 +665,9 @@ const { subscriptions, recurringMerchants } = detectSubscriptions(allTransaction
   const cat = r.category || "Other";
   catTotals[cat] = (catTotals[cat] || 0) + Math.abs(r.amount);
 });
-    const topCats = Object.entries(catTotals).sort((a, b) => b[1] - a[1]).slice(0, 5);
+    const topCats = Object.entries(catTotals)
+      .filter(([cat]) => cat !== "Other" && cat !== "Personal Transfers")
+      .sort((a, b) => b[1] - a[1]).slice(0, 5);
 
     const fmt = n => (n == null || isNaN(n)) ? "—" : n.toLocaleString("sv-SE", { minimumFractionDigits: 2 });
 
@@ -705,7 +707,7 @@ const { subscriptions, recurringMerchants } = detectSubscriptions(allTransaction
 
     // Auto insight: largest category (exclude Personal Transfers)
     const topCatsForInsight = Object.entries(catTotals)
-      .filter(([cat]) => cat !== "Personal Transfers")
+      .filter(([cat]) => cat !== "Personal Transfers" && cat !== "Other")
       .sort((a, b) => b[1] - a[1]);
     if(topCatsForInsight.length > 0){
       const grandForInsight = topCatsForInsight.reduce((s,[,v])=>s+v,0)||1;
