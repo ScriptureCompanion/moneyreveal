@@ -1149,6 +1149,17 @@ function detectCategory(merchant) {
     return MERCHANT_CATEGORY_MAP[text];
   }
 
+  // Early check: transfer-like merchants containing "internet" or "mobil" must not fall into Telecom
+  const transferPrefixes = [
+    "överf internet","overf internet",
+    "överf mobil","overf mobil",
+    "överföring mobil","overforing mobil",
+    "stående överf","staende overf"
+  ];
+  if (transferPrefixes.some(p => text.includes(p))) {
+    return "Personal Transfers";
+  }
+
   // Fall back to keyword scanning over CATEGORY_KEYWORDS
   for (const [category, keywords] of Object.entries(CATEGORY_KEYWORDS)) {
     for (const keyword of keywords) {
