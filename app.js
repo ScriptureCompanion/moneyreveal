@@ -142,6 +142,10 @@ const CATEGORY_KEYWORDS = {
     "tickster","ticketmaster","ticket","event"
   ],
 
+  "Memberships & Fees": [
+    "a-kassa","akassa","fackavgift","medlemsavgift","föreningsavgift","unionen"
+  ],
+
   "Personal Transfers": [
     "överf mobil","överföring mobil","overforing mobil",
     "overf mobil",
@@ -412,6 +416,8 @@ const MERCHANT_CATEGORY_MAP = {
 
   // --- New mappings ---
   "oob visby": "Shopping & Equipment",
+  "unionens a kas": "Memberships & Fees",
+  "unionens a-kas": "Memberships & Fees",
   "tickster": "Entertainment",
   "ticketmaster s": "Entertainment",
   "wavespeedai": "Software & SaaS",
