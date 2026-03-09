@@ -373,6 +373,8 @@ function handleParsedRows(rows, fileName, fileType) {
  const normalizedRows = normalizeRows(rows);
   console.log("Normalized rows:", normalizedRows);
 
+  validateBalanceSequence(normalizedRows);
+
   allTransactions = allTransactions.concat(normalizedRows);
 
   // Deduplicate
@@ -588,6 +590,33 @@ function detectColumns(headerRow) {
   return cols;
 }
 
+function inferColumnsByData(rows, sampleSize = 30) {
+  const scores = [];
+  const sample = rows.slice(0, sampleSize);
+
+  for (let col = 0; col < (rows[0] || []).length; col++) {
+    let dateScore = 0;
+    let amountScore = 0;
+    let textScore = 0;
+
+    sample.forEach(r => {
+      const v = String(r[col] ?? "").trim();
+
+      if (/^\d{4}-\d{2}-\d{2}/.test(normalizeDate(v))) dateScore++;
+      if (!isNaN(parseAmount(v))) amountScore++;
+      if (/[a-zåäö]/i.test(v)) textScore++;
+    });
+
+    scores[col] = { col, dateScore, amountScore, textScore };
+  }
+
+  const dateCol = scores.sort((a,b)=>b.dateScore-a.dateScore)[0]?.col ?? -1;
+  const amountCol = scores.sort((a,b)=>b.amountScore-a.amountScore)[0]?.col ?? -1;
+  const textCol = scores.sort((a,b)=>b.textScore-a.textScore)[0]?.col ?? -1;
+
+  return { date: dateCol, amount: amountCol, description: textCol };
+}
+
 function normalizeDate(value) {
   if (value == null || value === "") return "";
 
@@ -629,6 +658,27 @@ function normalizeDate(value) {
   return s; // return as-is and let the existing date filter handle it
 }
 
+function isValidTransactionRow(date, amount, description) {
+  if (!date) return false;
+  if (amount === null || isNaN(amount)) return false;
+  if (Math.abs(amount) > 100000000) return false;
+
+  const text = (description || "").toLowerCase();
+
+  const invalidWords = [
+    "saldo",
+    "balance",
+    "total",
+    "opening",
+    "closing",
+    "summary"
+  ];
+
+  if (invalidWords.some(w => text.includes(w))) return false;
+
+  return true;
+}
+
 function normalizeRows(rows) {
   const transactions = [];
 
@@ -647,6 +697,12 @@ function normalizeRows(rows) {
       console.log("Detected columns:", cols, "at row", i);
       break;
     }
+  }
+
+  if (cols.date === -1 && cols.amount === -1) {
+    console.log("Header not detected, using probabilistic inference");
+    cols = inferColumnsByData(rows.slice(0, 40));
+    startIndex = 0;
   }
 
   console.log("Transactions start at row index:", startIndex);
@@ -686,7 +742,7 @@ function normalizeRows(rows) {
 
     const balance = cols.balance !== -1 ? parseAmount(String(row[cols.balance] ?? "")) : null;
    if (!date && !description) continue;
-    if (!date || !/^\d{4}-\d{2}-\d{2}/.test(date)) continue;
+    if (!isValidTransactionRow(date, amount, description)) continue;
  const merchant = normalizeMerchant(description);
 
 transactions.push({
@@ -857,6 +913,22 @@ function detectCategory(description) {
   }
 
   return "Other";
+}
+
+function validateBalanceSequence(transactions) {
+  for (let i = 1; i < transactions.length; i++) {
+    const prev = transactions[i-1];
+    const curr = transactions[i];
+
+    if (prev.balance != null && curr.balance != null && curr.amount != null) {
+      const expected = prev.balance + curr.amount;
+      const diff = Math.abs(expected - curr.balance);
+
+      if (diff > 1) {
+        console.warn("Balance mismatch:", curr);
+      }
+    }
+  }
 }
 
 function detectSubscriptions(transactions){
