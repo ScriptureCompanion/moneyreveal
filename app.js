@@ -1,5 +1,3 @@
-console.log("%c MoneyReveal app.js VERSION 3 - Transfers & Internal REMOVED ", "background:#27ae60;color:#fff;font-size:14px;padding:4px 8px;border-radius:4px;");
-
 const fileInput = document.getElementById("fileInput");
 const results = document.getElementById("results");
 
@@ -133,27 +131,21 @@ const CATEGORY_KEYWORDS = {
   "Personal Transfers": [
     "överföring","överf","överf mobil","stående överf","autogiro",
     "bg ","pg ","bankgiro","plusgiro","intern","interntransfer",
-    "sparande","flytt","swish"
+    "sparande","flytt","swish",
+    "överföring mobil","overforing mobil","overf mobil",
+    "överf internet","overf internet","staende overf","stående","staende"
   ],
 
   "Investment": [
     "avanza","investment"
   ],
 
-"Entertainment": [
+  "Entertainment": [
     "tickster","ticketmaster","ticket","event"
   ],
 
   "Memberships & Fees": [
     "a-kassa","akassa","fackavgift","medlemsavgift","föreningsavgift","unionen"
-  ],
-
-  "Personal Transfers": [
-    "överf mobil","överföring mobil","overforing mobil",
-    "overf mobil",
-    "överf internet","overf internet",
-    "stående överf","staende overf",
-    "stående","staende"
   ]
 
 };
