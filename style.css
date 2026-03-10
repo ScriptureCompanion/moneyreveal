@@ -1,58 +1,280 @@
-body {
-  font-family: Arial, sans-serif;
-  background: #f5f7fb;
-  color: #222;
-  margin: 0;
-  padding: 0;
+@import url('https://fonts.googleapis.com/css2?family=League+Spartan:wght@400;600;700;800&display=swap');
+
+/* =========================================
+   MoneyReveal — Brand Design System
+   ========================================= */
+
+:root {
+  --bg:           #f4f4f0;
+  --surface:      #ffffff;
+  --border:       #e2e2dc;
+  --text-primary: #1e2023;
+  --text-muted:   #7a7d82;
+  --teal:         #1e9e6e;
+  --teal-light:   #e6f7f1;
+  --teal-dark:    #167a55;
+  --amber:        #e07000;
+  --amber-light:  #fff8f0;
+  --red:          #c0392b;
+  --green:        #27ae60;
+  --radius:       8px;
+  --shadow:       0 1px 4px rgba(0,0,0,0.07);
 }
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { font-size: 16px; }
+
+body {
+  font-family: "League Spartan", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text-primary);
+  line-height: 1.55;
+  min-height: 100vh;
+}
+
+/* =========================================
+   HERO
+   ========================================= */
+
+.hero {
+  background: var(--bg);
+  padding: 56px 24px 40px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: center;
+}
+
+.hero-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: max-content;
+}
+
+.brand-row {
+  display: flex;
+  align-items: baseline;
+  gap: 0;
+  margin-bottom: 6px;
+  width: 100%;
+}
+
+.wordmark {
+  font-size: clamp(3.4rem, 9.5vw, 5rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  user-select: none;
+  flex: 1;
+}
+
+.wordmark-money  { color: #1c2025; }
+.wordmark-reveal { color: #1e9e6e; }
+
+/* Bar chart icon */
+.chart-icon {
+  display: inline-flex;
+  align-items: flex-end;
+  gap: 0.13em;
+  height: 1.2em;
+  font-size: clamp(3.4rem, 9.5vw, 5rem);
+  flex-shrink: 0;
+  vertical-align: baseline;
+  margin-left: 0.14em;
+  margin-bottom: 0.06em;
+}
+
+.chart-icon .bar {
+  display: block;
+  width: 0.28em;
+  background: #1e9e6e;
+  border-radius: 0;
+}
+
+.chart-icon .bar:nth-child(1) { height: 0.46em; }
+.chart-icon .bar:nth-child(2) { height: 1.2em; }
+.chart-icon .bar:nth-child(3) { height: 0.74em; }
+.chart-icon .bar:nth-child(4) { display: none; }
+
+.hero-tagline {
+  font-size: clamp(1.1rem, 2.4vw, 1.3rem);
+  font-weight: 600;
+  color: #2a2e33;
+  margin: 0;
+  line-height: 1.2;
+  white-space: nowrap;
+  letter-spacing: 0.005em;
+  width: 100%;
+  padding-left: 0;
+  text-align: left;
+}
+
+/* =========================================
+   CONTAINER
+   ========================================= */
 
 .container {
-  max-width: 760px;
-  margin: 80px auto;
-  padding: 24px;
-  text-align: center;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 28px 20px;
 }
 
-h1 {
-  font-size: 44px;
-  margin-bottom: 10px;
-}
-
-.tagline {
-  font-size: 22px;
-  font-weight: 600;
-  margin-bottom: 10px;
-}
-
-.description {
-  font-size: 17px;
-  color: #555;
-  margin-bottom: 30px;
-}
+/* =========================================
+   UPLOAD BOX
+   ========================================= */
 
 .upload-box {
-  background: white;
-  border: 2px dashed #cfd6e4;
-  border-radius: 12px;
-  padding: 32px;
-  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 20px 24px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
 }
 
-input[type="file"] {
-  font-size: 16px;
+#fileInput {
+  display: none;
 }
+
+.upload-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 20px;
+  background: var(--teal);
+  color: #fff;
+  font-size: 0.88rem;
+  font-weight: 600;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.15s ease;
+  white-space: nowrap;
+}
+
+.upload-label:hover  { background: var(--teal-dark); }
+.upload-label svg    { flex-shrink: 0; }
+
+.btn-reset {
+  display: inline-flex;
+  align-items: center;
+  padding: 9px 16px;
+  background: transparent;
+  color: var(--text-muted);
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 500;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+  white-space: nowrap;
+}
+
+.btn-reset:hover {
+  color: var(--text-primary);
+  border-color: #aaa;
+}
+
+/* =========================================
+   RESULTS — stat cards
+   ========================================= */
 
 #results {
-  background: white;
-  border-radius: 12px;
-  padding: 20px;
-  text-align: left;
-  white-space: pre-wrap;
-  min-height: 40px;
+  padding-top: 4px;
 }
-#summary, #topExpenses, #subscriptions {
-    margin: 15px 0;
-    padding: 10px;
-    background: #f5f5f5;
-    border-radius: 6px;
+
+/* Override inline stat card styles to respect brand */
+#results div[style*="background:#fff8f0"] {
+  background: var(--amber-light) !important;
+  border-left-color: var(--amber) !important;
+  border-radius: var(--radius) !important;
+}
+
+#results div[style*="background:#f0fff4"] {
+  background: #f0faf4 !important;
+  border-radius: var(--radius) !important;
+}
+
+#results div[style*="background:#f5f5ff"] {
+  border-radius: var(--radius) !important;
+}
+
+/* =========================================
+   TABLE
+   ========================================= */
+
+table {
+  border-radius: var(--radius);
+  overflow: hidden;
+  border: 1px solid var(--border) !important;
+  box-shadow: var(--shadow);
+}
+
+thead tr {
+  background: #f0f0ec !important;
+}
+
+thead th {
+  font-size: 0.78rem !important;
+  font-weight: 700 !important;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-muted) !important;
+  padding: 10px 8px !important;
+  border-color: var(--border) !important;
+}
+
+tbody td {
+  border-color: var(--border) !important;
+  vertical-align: middle;
+}
+
+tbody tr:hover { background: #fafafa; }
+
+select {
+  font-family: inherit;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--surface);
+  color: var(--text-primary);
+  padding: 3px 6px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+select:focus {
+  outline: 2px solid var(--teal);
+  outline-offset: 1px;
+}
+
+/* =========================================
+   SECTION HEADINGS (inline bold)
+   ========================================= */
+
+#results strong {
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+}
+
+/* =========================================
+   RESPONSIVE
+   ========================================= */
+
+@media (max-width: 520px) {
+  .hero          { padding: 36px 16px 28px; }
+  .brand-row     { gap: 8px; }
+  .chart-icon .bar:nth-child(1),
+  .chart-icon .bar:nth-child(2) { display: none; }
+  .hero-tagline  { white-space: normal; }
+  .upload-box    { flex-direction: column; align-items: flex-start; }
+  .upload-label,
+  .btn-reset     { width: 100%; justify-content: center; }
 }
