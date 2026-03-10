@@ -1,3 +1,5 @@
+console.log("%c MoneyReveal app.js VERSION 3 - Transfers & Internal REMOVED ", "background:#27ae60;color:#fff;font-size:14px;padding:4px 8px;border-radius:4px;");
+
 const fileInput = document.getElementById("fileInput");
 const results = document.getElementById("results");
 
@@ -375,9 +377,9 @@ const MERCHANT_CATEGORY_MAP = {
   "stripe": "Banking & Fees",
   "square": "Banking & Fees",
   "klarna": "Loans & Credit",
- "swish": "Internal Transfers",
-  "venmo": "Internal Transfers",
-  "cash app": "Internal Transfers",
+ "swish": "Personal Transfers",
+  "venmo": "Personal Transfers",
+  "cash app": "Personal Transfers",
 
   // --- Accounting ---
   "fortnox": "Accounting & Admin",
@@ -401,7 +403,7 @@ const MERCHANT_CATEGORY_MAP = {
   "region gotland": "Health",
   "qliro": "Loans & Credit",
   "destination go": "Travel",
-  "skattekonto": "Internal Transfers",
+  "skattekonto": "Taxes",
   "harry carlsson": "Shopping & Equipment",
   "avanza bank": "Investment",
 
@@ -1300,18 +1302,34 @@ function looksLikePersonName(text) {
 }
 
 function validateBalanceSequence(transactions) {
+  // Only run if at least half the rows have a balance value — otherwise data
+  // does not carry a running balance column and every row would fire a warning.
+  const withBalance = transactions.filter(t => t.balance != null);
+  if (withBalance.length < transactions.length * 0.5) return;
+
+  let mismatches = 0;
+  const MAX_WARNINGS = 3;
+
   for (let i = 1; i < transactions.length; i++) {
-    const prev = transactions[i-1];
+    const prev = transactions[i - 1];
     const curr = transactions[i];
 
     if (prev.balance != null && curr.balance != null && curr.amount != null) {
       const expected = prev.balance + curr.amount;
       const diff = Math.abs(expected - curr.balance);
 
+      // Tolerance: 1 unit — covers rounding in source files
       if (diff > 1) {
-        console.warn("Balance mismatch:", curr);
+        mismatches++;
+        if (mismatches <= MAX_WARNINGS) {
+          console.warn("Balance mismatch at row", i, "— expected", expected.toFixed(2), "got", curr.balance, curr);
+        }
       }
     }
+  }
+
+  if (mismatches > MAX_WARNINGS) {
+    console.warn(`Balance mismatch: ${mismatches} total rows affected (first ${MAX_WARNINGS} logged above).`);
   }
 }
 
