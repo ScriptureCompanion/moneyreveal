@@ -130,7 +130,7 @@ const CATEGORY_KEYWORDS = {
     "dividend","utdelning","lönespecifikation"
   ],
 
-  "Internal Transfers": [
+  "Personal Transfers": [
     "överföring","överf","överf mobil","stående överf","autogiro",
     "bg ","pg ","bankgiro","plusgiro","intern","interntransfer",
     "sparande","flytt","swish"
