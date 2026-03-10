@@ -118,7 +118,7 @@ const CATEGORY_KEYWORDS = {
 
   "Taxes": [
     "skatteverket","f-skatt","a-skatt","moms","arbetsgivaravgift",
-    "preliminärskatt","arbetsgivare","sociala avgifter","skatteåterbäring",
+    "preliminärskatt","arbetsgivare","sociala       avgifter","skatteåterbäring",
     "skattebetalning","skattsedel","trängselskatt"
   ],
 
@@ -128,7 +128,7 @@ const CATEGORY_KEYWORDS = {
     "dividend","utdelning","lönespecifikation"
   ],
 
-  "Transfers & Internal": [
+  "Internal Transfers": [
     "överföring","överf","överf mobil","stående överf","autogiro",
     "bg ","pg ","bankgiro","plusgiro","intern","interntransfer",
     "sparande","flytt","swish"
@@ -375,9 +375,9 @@ const MERCHANT_CATEGORY_MAP = {
   "stripe": "Banking & Fees",
   "square": "Banking & Fees",
   "klarna": "Loans & Credit",
-  "swish": "Transfers & Internal",
-  "venmo": "Transfers & Internal",
-  "cash app": "Transfers & Internal",
+ "swish": "Internal Transfers",
+  "venmo": "Internal Transfers",
+  "cash app": "Internal Transfers",
 
   // --- Accounting ---
   "fortnox": "Accounting & Admin",
@@ -401,7 +401,7 @@ const MERCHANT_CATEGORY_MAP = {
   "region gotland": "Health",
   "qliro": "Loans & Credit",
   "destination go": "Travel",
-  "skattekonto": "Transfers & Internal",
+  "skattekonto": "Internal Transfers",
   "harry carlsson": "Shopping & Equipment",
   "avanza bank": "Investment",
 
@@ -421,7 +421,26 @@ const MERCHANT_CATEGORY_MAP = {
   "tickster": "Entertainment",
   "ticketmaster s": "Entertainment",
   "wavespeedai": "Software & SaaS",
-  "zettle": "Banking & Fees"
+  "zettle": "Banking & Fees",
+
+  // --- Custom merchant mappings ---
+  "licencia 2824": "Transport",
+  "les 15 nits": "Food & Dining",
+  "meze": "Food & Dining",
+  "nyx wisbygaest": "Travel",
+  "harnostjarna r": "Food & Dining",
+  "walley": "Banking & Fees",
+  "zettle granna": "Banking & Fees",
+  "zettle bargar": "Banking & Fees",
+  "zettle stora": "Banking & Fees",
+  "svea bank": "Loans & Credit",
+  "sumup pho ta": "Banking & Fees",
+  "din x roma": "Transport",
+  "adyen": "Banking & Fees",
+  "craft n draft": "Food & Dining",
+  "clarioncollect": "Travel",
+  "dyning": "Food & Dining",
+  "h rn stj": "Food & Dining"
 
 };;
 
@@ -437,11 +456,13 @@ function getBestSheet(workbook) {
 
 let allTransactions = [];
 let filesImported = 0;
+let importedFileSignatures = new Set();
 
 fileInput.addEventListener("change", handleFileUpload);
 
 document.getElementById("resetData").onclick = () => {
   allTransactions = [];
+  importedFileSignatures.clear();
   results.innerHTML = "<p>Data cleared.</p>";
 };
 
@@ -452,18 +473,32 @@ function handleFileUpload(event) {
   results.textContent = `Reading ${files.length} file(s)...`;
 
   let supportedFiles = 0;
+  let skippedFiles = 0;
   for (const file of files) {
     const fileName = file.name.toLowerCase();
 
-    if (fileName.endsWith(".xlsx") || fileName.endsWith(".xls")) {
+    if (fileName.endsWith(".xlsx") || fileName.endsWith(".xls") || fileName.endsWith(".csv")) {
+      const sig = `${file.name}|${file.size}|${file.lastModified}`;
+      if (importedFileSignatures.has(sig)) {
+        skippedFiles++;
+        continue;
+      }
+      importedFileSignatures.add(sig);
       supportedFiles++;
-      readExcelFile(file);
-    } else if (fileName.endsWith(".csv")) {
-      supportedFiles++;
-      readCsvFile(file);
+      if (fileName.endsWith(".xlsx") || fileName.endsWith(".xls")) {
+        readExcelFile(file);
+      } else {
+        readCsvFile(file);
+      }
     }
   }
-  if (supportedFiles === 0) results.textContent = "No supported files found.";
+  if (supportedFiles === 0 && skippedFiles === 0) {
+    results.textContent = "No supported files found.";
+  } else if (supportedFiles === 0 && skippedFiles > 0) {
+    results.textContent = `All ${skippedFiles} file(s) already imported, skipped.`;
+  } else if (skippedFiles > 0) {
+    results.textContent = `Reading ${supportedFiles} file(s)... (${skippedFiles} duplicate(s) skipped)`;
+  }
 }
 
 function readExcelFile(file) {
@@ -1315,3 +1350,4 @@ function estimateMonthlySpending(transactions) {
   const total = Math.abs(expenses.reduce((s, r) => s + r.amount, 0));
   return (total / days) * 30;
 }
+
