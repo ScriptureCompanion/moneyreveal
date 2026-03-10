@@ -8,26 +8,26 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
+  <style>
+    .app-banner {
+      display: flex;
+      justify-content: center;
+      padding: 32px 16px 24px;
+    }
+    .app-banner img {
+      display: block;
+      width: 100%;
+      max-width: 720px;
+      height: auto;
+    }
+  </style>
 </head>
 <body>
 
   <!-- HERO BANNER -->
-  <header class="hero">
-    <div class="hero-inner">
-      <div class="brand-row">
-        <div class="wordmark">
-          <span class="wordmark-money">Money</span><span class="wordmark-reveal">Reveal</span>
-        </div>
-        <div class="chart-icon" aria-hidden="true">
-          <span class="bar" style="height:28px;"></span>
-          <span class="bar" style="height:40px;"></span>
-          <span class="bar" style="height:22px;"></span>
-          <span class="bar" style="height:54px;"></span>
-        </div>
-      </div>
-      <p class="hero-tagline">Upload your bank file. See where your money actually goes.</p>
-    </div>
-  </header>
+  <div class="app-banner">
+    <img src="MoneyReveal App Banner.svg" alt="MoneyReveal" />
+  </div>
 
   <!-- MAIN APP -->
   <div class="container">
