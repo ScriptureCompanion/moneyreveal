@@ -1092,7 +1092,7 @@ transactions.push({
   amount,
   balance,
   rawAmount: rawAmt,
-  category: getMerchantCategoryOverride(merchant) || detectCategory(merchant)
+  category: detectCategory(merchant)
 });
   }
 
@@ -1273,10 +1273,10 @@ function detectCategory(merchant) {
 }
 
 function getMerchantCategoryOverride(merchant) {
-  try { return localStorage.getItem("cat_override:" + merchant) || null; } catch(e) { return null; }
+  return null; // localStorage disabled — always use code-defined categories
 }
 function setMerchantCategoryOverride(merchant, category) {
-  try { localStorage.setItem("cat_override:" + merchant, category); } catch(e) {}
+  // localStorage disabled — overrides not persisted
 }
 
 function looksLikePersonName(text) {
