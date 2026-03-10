@@ -442,7 +442,7 @@ const MERCHANT_CATEGORY_MAP = {
   "dyning": "Food & Dining",
   "h rn stj": "Food & Dining"
 
-};;
+};
 
 function getBestSheet(workbook) {
   let bestRows = [];
@@ -673,11 +673,21 @@ let html = `
 </div>`;
 
   if (allTransactions.length > 0) {
-    const expenses   = allTransactions.filter(r => r.amount < 0);
-    const income     = allTransactions.filter(r => r.amount > 0);
+    const expenses = allTransactions.filter(
+      r =>
+        r.amount < 0 &&
+        r.category !== "Internal Transfers" &&
+        r.category !== "Personal Transfers"
+    );
+    const income = allTransactions.filter(
+      r =>
+        r.amount > 0 &&
+        r.category !== "Internal Transfers" &&
+        r.category !== "Personal Transfers"
+    );
     const totalSpent = expenses.reduce((s, r) => s + r.amount, 0);
-    const totalIn    = income.reduce((s, r) => s + r.amount, 0);
-    const net        = totalIn + totalSpent;
+    const totalIn = income.reduce((s, r) => s + r.amount, 0);
+    const net = totalIn + totalSpent;
 
     const descCount = {};
     expenses.forEach(r => {
@@ -701,8 +711,14 @@ const { subscriptions, recurringMerchants } = detectSubscriptions(allTransaction
   catTotals[cat] = (catTotals[cat] || 0) + Math.abs(r.amount);
 });
     const topCats = Object.entries(catTotals)
-      .filter(([cat]) => cat !== "Other" && cat !== "Personal Transfers")
-      .sort((a, b) => b[1] - a[1]).slice(0, 5);
+      .filter(
+        ([cat]) =>
+          cat !== "Other" &&
+          cat !== "Personal Transfers" &&
+          cat !== "Internal Transfers"
+      )
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 5);
 
     const fmt = n => (n == null || isNaN(n)) ? "—" : n.toLocaleString("sv-SE", { minimumFractionDigits: 2 });
 
@@ -742,7 +758,12 @@ const { subscriptions, recurringMerchants } = detectSubscriptions(allTransaction
 
     // Auto insight: largest category (exclude Personal Transfers)
     const topCatsForInsight = Object.entries(catTotals)
-      .filter(([cat]) => cat !== "Personal Transfers" && cat !== "Other")
+      .filter(
+        ([cat]) =>
+          cat !== "Personal Transfers" &&
+          cat !== "Internal Transfers" &&
+          cat !== "Other"
+      )
       .sort((a, b) => b[1] - a[1]);
     if(topCatsForInsight.length > 0){
       const grandForInsight = topCatsForInsight.reduce((s,[,v])=>s+v,0)||1;
@@ -1299,9 +1320,10 @@ function detectSubscriptions(transactions){
   const groups = {};
 
   transactions.forEach(t => {
-    if(t.amount >= 0) return;
+    if (t.amount >= 0) return;
+    if (t.category === "Internal Transfers" || t.category === "Personal Transfers") return;
     const key = t.merchant;
-    if(!groups[key]) groups[key] = [];
+    if (!groups[key]) groups[key] = [];
     groups[key].push(t);
   });
 
@@ -1340,7 +1362,12 @@ function detectSubscriptions(transactions){
 }
 
 function estimateMonthlySpending(transactions) {
-  const expenses = transactions.filter(r => r.amount < 0);
+  const expenses = transactions.filter(
+    r =>
+      r.amount < 0 &&
+      r.category !== "Internal Transfers" &&
+      r.category !== "Personal Transfers"
+  );
   if (expenses.length === 0) return 0;
   const dates = expenses.map(r => new Date(r.date)).filter(d => !isNaN(d));
   if (dates.length < 2) return Math.abs(expenses.reduce((s, r) => s + r.amount, 0));
