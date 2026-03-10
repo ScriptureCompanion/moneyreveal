@@ -4,24 +4,47 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MoneyReveal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+
+  <!-- HERO BANNER -->
+  <header class="hero">
+    <div class="hero-inner">
+      <div class="brand-row">
+        <div class="wordmark">
+          <span class="wordmark-money">Money</span><span class="wordmark-reveal">Reveal</span>
+        </div>
+        <div class="chart-icon" aria-hidden="true">
+          <span class="bar" style="height:28px;"></span>
+          <span class="bar" style="height:40px;"></span>
+          <span class="bar" style="height:22px;"></span>
+          <span class="bar" style="height:54px;"></span>
+        </div>
+      </div>
+      <p class="hero-tagline">Upload your bank file. See where your money actually goes.</p>
+    </div>
+  </header>
+
+  <!-- MAIN APP -->
   <div class="container">
-    <h1>MoneyReveal</h1>
-    <p class="tagline">Reveal where your money really goes</p>
-    <p class="description">
-      Upload a bank statement to detect subscriptions, recurring payments, and spending patterns.
-    </p>
-
     <div class="upload-box">
+      <label class="upload-label" for="fileInput">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        Upload bank statement
+      </label>
       <input type="file" id="fileInput" accept=".csv,.xlsx,.xls" multiple>
-      <button id="resetData">Reset Imported Data</button>
-         </div>
+      <button id="resetData" class="btn-reset">Reset Data</button>
+    </div>
+  </div>
 
-  <div id="results"></div>
+  <div id="results" class="container"></div>
 
 <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <script src="app.js"></script>
 </body>
+</html>
